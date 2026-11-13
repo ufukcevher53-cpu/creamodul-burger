@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex"><title>3D Anatomi · Hastalığını gör</title>
+<style>
+*{box-sizing:border-box;margin:0}html,body{height:100%;overflow:hidden;background:#0B1220;color:#E6EDF7;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#c{position:fixed;inset:0;display:block;touch-action:none}
+.top{position:fixed;left:0;right:0;top:0;padding:14px 14px 0;z-index:5;pointer-events:none}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:10px;pointer-events:auto}
+.brand .lg{width:34px;height:34px;border-radius:10px;background:#1E6FD9;display:grid;place-items:center;font-weight:800}
+.brand b{font-size:15px}.brand small{display:block;color:#8FA3BF;font-size:12px}
+.sbox{position:relative;max-width:520px;pointer-events:auto}
+#q{width:100%;border:1px solid #24324A;background:rgba(17,26,43,.92);backdrop-filter:blur(8px);color:#fff;font:600 16px inherit;font-family:inherit;padding:14px 16px 14px 44px;border-radius:14px;outline:none}
+#q:focus{border-color:#3B82F6}
+.sbox:before{content:"🔍";position:absolute;left:15px;top:13px;font-size:16px;opacity:.8}
+#sug{list-style:none;padding:6px;margin-top:6px;background:rgba(17,26,43,.97);border:1px solid #24324A;border-radius:14px;display:none;max-height:46vh;overflow:auto}
+#sug li{padding:11px 12px;border-radius:10px;cursor:pointer;display:flex;justify-content:space-between;gap:10px}
+#sug li:hover,#sug li.act{background:#1B2A44}#sug small{color:#8FA3BF;white-space:nowrap}
+.panel{position:fixed;left:12px;right:12px;bottom:12px;z-index:5;max-width:520px;background:rgba(17,26,43,.94);backdrop-filter:blur(10px);border:1px solid #24324A;border-radius:18px;padding:16px 18px;transform:translateY(130%);transition:transform .5s cubic-bezier(.3,.8,.3,1)}
+.panel.on{transform:none}
+.panel .t{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.panel h2{font-size:20px}.panel .lat{color:#8FA3BF;font-size:13px;margin-top:2px}
+.panel p{font-size:15px;line-height:1.5;color:#C9D6E8;margin-top:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.chips span{font-size:12.5px;padding:5px 9px;border-radius:999px;background:#1B2A44;color:#BFD3F2}
+.chips i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+.tog{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px;background:#0F1A2D;padding:5px;border-radius:12px}
+.tog button{border:0;border-radius:9px;padding:9px;font:700 14px inherit;font-family:inherit;color:#8FA3BF;background:transparent}
+.tog button.on{background:#24324A;color:#fff}
+.x{border:0;background:#1B2A44;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;flex:none}
+.hint{position:fixed;left:0;right:0;bottom:38px;text-align:center;color:#8FA3BF;font-size:13px;z-index:4;pointer-events:none}
+.load{position:fixed;inset:0;display:grid;place-items:center;z-index:9;background:#0B1220;font-weight:700;color:#8FA3BF}
+.lic{position:fixed;right:10px;bottom:6px;z-index:3;font-size:10px;color:#4E6180;max-width:260px;text-align:right;line-height:1.3}
+.lic a{color:#7C93B5}
+@media(min-width:800px){.panel{left:auto;right:20px;bottom:20px;width:400px}}
+</style></head><body>
+<canvas id="c"></canvas>
+<div class="load" id="load">Model yükleniyor…</div>
+<div class="top"><div class="brand"><div class="lg">K</div><div><b>Klinik Adınız</b><small>Hastalığını yaz, vücutta gör</small></div></div>
+<div class="sbox"><input id="q" placeholder="Hastalık ara: bronşit, pnömotoraks…" autocomplete="off"><ul id="sug"></ul></div></div>
+<div class="hint" id="hint">Parmakla döndür · iki parmakla yakınlaştır</div>
+<div class="panel" id="panel"><div class="t"><div><h2 id="pT"></h2><div class="lat" id="pL"></div></div><button class="x" id="px">✕</button></div>
+<div class="tog"><button id="tH">Sağlıklı</button><button id="tS" class="on">Hastalıklı</button></div>
+<p id="pD"></p><div class="chips" id="pC"></div></div>
+<div class="lic">3D modeller: <a href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/" target="_blank">BodyParts3D</a> © DBCLS, CC BY-SA 2.1 JP · düzenlenmiş hâli CC BY-SA 4.0</div>
+
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from "three";
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
+import {OrbitControls} from "three/addons/controls/OrbitControls.js";
+
+const R=new THREE.WebGLRenderer({canvas:document.getElementById("c"),antialias:true});
+R.setPixelRatio(Math.min(devicePixelRatio,2));R.setSize(innerWidth,innerHeight);R.outputColorSpace=THREE.SRGBColorSpace;
+const S=new THREE.Scene();S.background=new THREE.Color(0x0B1220);
+const cam=new THREE.PerspectiveCamera(38,innerWidth/innerHeight,1,8000);
+const ctl=new OrbitControls(cam,R.domElement);ctl.enableDamping=true;ctl.dampingFactor=.08;ctl.minDistance=80;ctl.maxDistance=2600;
+S.add(new THREE.HemisphereLight(0xdfe9ff,0x1a2233,1.1));
+const dl=new THREE.DirectionalLight(0xffffff,1.6);dl.position.set(300,800,900);S.add(dl);
+const dl2=new THREE.DirectionalLight(0x9fb8ff,.6);dl2.position.set(-500,200,-600);S.add(dl2);
+addEventListener("resize",()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();R.setSize(innerWidth,innerHeight)});
+
+const COL={trachea:0xdfe7f2,bronchus:0xdfe7f2,lung_RU:0xf0a2ae,lung_RM:0xeb97a5,lung_RL:0xe88c9c,lung_LU:0xf0a2ae,lung_LL:0xe88c9c,
+ pulm_artery:0x4f7fe0,pulm_vein:0xd94b5a,heart:0xc4404f,aorta:0xd94b5a,ribs:0xeee6d6,diaphragm:0xc98a72,svc:0x4f7fe0,skin:0xd9b8a6};
+const NAME={trachea:"Soluk borusu (trakea)",bronchus:"Bronşlar",lung_RU:"Sağ akciğer üst lob",lung_RM:"Sağ akciğer orta lob",lung_RL:"Sağ akciğer alt lob",
+ lung_LU:"Sol akciğer üst lob",lung_LL:"Sol akciğer alt lob",pulm_artery:"Akciğer atardamarı",pulm_vein:"Akciğer toplardamarı",heart:"Kalp",aorta:"Aort (ana atardamar)",ribs:"Kaburgalar",diaphragm:"Diyafram",svc:"Üst ana toplardamar"};
+const M={};const base={};let root;
+
+// Hastalıklar: sadece "vücutta ne oluyor" anlatılır, tavsiye yok.
+const DZ=[
+ {id:"ptx",n:"Akciğer sönmesi",lat:"Pnömotoraks · J93",syn:["pnömotoraks","pnomotoraks","akciğer çökmesi","sönmüş akciğer"],
+  focus:["lung_RU","lung_RM","lung_RL"],hi:["lung_RU","lung_RM","lung_RL"],
+  d:"Akciğer ile göğüs duvarı arasındaki ince boşluğa hava girer. Bu hava akciğeri dışarıdan sıkıştırır; akciğer büzüşür ve nefesle tam açılamaz. Görselde sağ akciğerin göğüs duvarından ayrılıp küçüldüğünü görüyorsunuz.",fx:"collapse"},
+ {id:"bron",n:"Bronşit",lat:"Akut bronşit · J20",syn:["bronşit","bronsit","bronş iltihabı"],
+  focus:["bronchus","trachea"],hi:["bronchus","trachea"],
+  d:"Soluk borusundan akciğerlere uzanan hava yollarının (bronşlar) iç yüzeyi iltihaplanır ve şişer. Borular daralır, içlerinde balgam birikir. Görselde kırmızıya dönen kısım iltihaplı bronşlardır.",fx:"inflame"},
+ {id:"emb",n:"Akciğer embolisi",lat:"Pulmoner emboli · I26",syn:["emboli","pulmoner emboli","akciğer pıhtısı","pıhtı"],
+  focus:["pulm_artery","heart"],hi:["pulm_artery"],
+  d:"Genellikle bacak toplardamarlarında oluşan bir pıhtı kopar, kalpten geçerek akciğer atardamarına gelir ve damarı tıkar. Tıkanan damarın beslediği akciğer bölümüne kan gidemez. Görselde mavi akciğer atardamarında koyu kırmızı pıhtıyı görüyorsunuz.",fx:"clot"},
+ {id:"pnm",n:"Zatürre",lat:"Pnömoni · J18",syn:["pnömoni","pnomoni","zatürre","akciğer enfeksiyonu"],
+  focus:["lung_RL"],hi:["lung_RL"],
+  d:"Akciğerin hava keseciklerine mikrop yerleşir. Kesecikler hava yerine iltihaplı sıvıyla dolar; o bölüm nefes alışverişine katılamaz. Görselde sağ akciğer alt lobunun koyulaşan bölümü iltihaplı alandır.",fx:"consol"},
+ {id:"eff",n:"Akciğer zarında sıvı",lat:"Plevral efüzyon · J90",syn:["plevral efüzyon","efüzyon","akciğerde su","akciğer zarında su"],
+  focus:["lung_RL","diaphragm"],hi:["lung_RL"],
+  d:"Akciğeri saran iki katlı zarın arasında normalden fazla sıvı birikir. Sıvı yerçekimiyle alta toplanır ve akciğerin alt kısmını sıkıştırır. Görselde sağ akciğerin tabanındaki mavi alan biriken sıvıdır.",fx:"fluid"},
+ {id:"copd",n:"KOAH",lat:"Kronik obstrüktif akciğer hastalığı · J44",syn:["koah","amfizem","kronik bronşit"],
+  focus:["lung_RU","lung_LU","bronchus"],hi:["lung_RU","lung_RM","lung_RL","lung_LU","lung_LL","bronchus"],
+  d:"Hava yolları uzun süre daralır ve hava kesecikleri esnekliğini kaybeder. Verilen nefes tam boşalamaz, hava akciğerde hapsolur ve akciğer şişkin kalır. Görselde soluklaşan ve büyüyen akciğerleri, daralan bronşları görüyorsunuz.",fx:"copd"},
+ {id:"ast",n:"Astım",lat:"Astım · J45",syn:["astım","astim","bronşiyal astım"],
+  focus:["bronchus"],hi:["bronchus"],
+  d:"Hava yollarının etrafındaki kaslar kasılır, iç yüzey şişer ve mukus artar. Bronşlar ataklar sırasında daralır, hava geçişi zorlaşır. Görselde nabız gibi atan turuncu bölge daralan hava yollarıdır.",fx:"asthma"},
+ {id:"ca",n:"Akciğerde kitle",lat:"Akciğer tümörü · C34",syn:["akciğer kanseri","akciğer tümörü","kitle","nodül","akciğer nodülü"],
+  focus:["lung_RU"],hi:["lung_RU"],
+  d:"Akciğer dokusunda hücrelerin kontrolsüz çoğalmasıyla bir kitle oluşur. Görselde sağ akciğer üst lobundaki koyu yuvarlak alan kitleyi temsil eder. Kitlenin türü ve büyüklüğü kişiye göre değişir; ayrıntıyı doktorunuz anlatacaktır.",fx:"mass"},
+ {id:"anv",n:"Aort anevrizması",lat:"Torasik aort anevrizması · I71",syn:["anevrizma","aort anevrizması","aort genişlemesi"],
+  focus:["aorta"],hi:["aorta"],
+  d:"Vücudun ana atardamarı olan aortun duvarı zayıflar ve bir bölümü balon gibi genişler. Görselde göğüsten aşağı inen aortun üzerindeki şişkinliği görüyorsunuz.",fx:"bulge"}
+];
+
+const fx=new THREE.Group();let pulse=null;
+new GLTFLoader().load("models/thorax.glb",g=>{
+ root=g.scene;root.rotation.x=-Math.PI/2;S.add(root);S.add(fx);root.updateMatrixWorld(true);
+ root.traverse(o=>{if(o.isMesh){const k=o.name.replace(/_\d+$/,"");const c=COL[k]??0xcccccc;
+  o.geometry.computeVertexNormals();
+  o.material=new THREE.MeshStandardMaterial({color:c,roughness:k==="ribs"?.7:.55,metalness:0,transparent:true,opacity:k==="skin"?.12:k.startsWith("lung")?.82:1,depthWrite:k!=="skin",side:k==="skin"?THREE.FrontSide:THREE.DoubleSide});
+  M[k]=o;base[k]={c,op:o.material.opacity,s:o.scale.clone(),p:o.position.clone()};}});
+ const box=new THREE.Box3().setFromObject(M.ribs);const ctr=box.getCenter(new THREE.Vector3());
+ home={t:ctr.clone().add(new THREE.Vector3(0,-40,0)),p:ctr.clone().add(new THREE.Vector3(0,30,980))};
+ cam.position.copy(home.p);ctl.target.copy(home.t);document.getElementById("load").remove();
+},undefined,e=>{document.getElementById("load").textContent="Model yüklenemedi"});
+let home;
+
+// kamera uçuşu
+let fly=null;
+function flyTo(keys){const b=new THREE.Box3();keys.forEach(k=>M[k]&&b.expandByObject(M[k]));const c=b.getCenter(new THREE.Vector3());const sz=b.getSize(new THREE.Vector3()).length();
+ const dir=new THREE.Vector3(.18,.12,1).normalize();const d=Math.max(300,sz*1.5)*(innerWidth<600?1.7:1.1);
+ fly={t0:performance.now(),dur:1300,fp:cam.position.clone(),ft:ctl.target.clone(),tp:c.clone().add(dir.multiplyScalar(d)).add(new THREE.Vector3(0,-d*.13,0)),tt:c.clone().add(new THREE.Vector3(0,-d*.13,0))};}
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+
+function reset(){for(const k in M){const o=M[k],b=base[k];o.material.color.setHex(b.c);o.material.opacity=b.op;o.material.emissive.setHex(0);o.scale.copy(b.s);o.position.copy(b.p);o.visible=true}
+ fx.clear();pulse=null;}
+function dim(except){for(const k in M){if(k==="skin")continue;if(!except.includes(k))M[k].material.opacity=Math.min(M[k].material.opacity,k==="ribs"?.07:.16)}}
+function centerOf(k){return new THREE.Box3().setFromObject(M[k]).getCenter(new THREE.Vector3())}
+function sphere(at,r,col,op=1){const m=new THREE.Mesh(new THREE.SphereGeometry(r,32,24),new THREE.MeshStandardMaterial({color:col,roughness:.5,transparent:op<1,opacity:op}));m.position.copy(at);fx.add(m);return m}
+
+let curD=null,sick=true;
+function apply(){reset();if(!curD)return;const z=curD;dim([...z.hi,...z.focus]);
+ z.hi.forEach(k=>{M[k].material.opacity=1});
+ if(!sick){z.hi.forEach(k=>M[k].material.emissive.setHex(0x0a2a12));return}
+ const E=(k,h)=>M[k].material.emissive.setHex(h);
+ if(z.fx==="collapse"){const hil=centerOf("bronchus").lerp(centerOf("lung_RM"),.35);
+   ["lung_RU","lung_RM","lung_RL"].forEach(k=>{const o=M[k];const wp=new THREE.Vector3();o.getWorldPosition(wp);
+     o.scale.multiplyScalar(.62);const lp=root.worldToLocal(hil.clone());o.position.copy(lp.multiplyScalar(1-.62));o.material.color.setHex(0xd98190)});
+   sphere(centerOf("lung_RM"),0.1,0x000000,0);
+   const b=new THREE.Box3();["lung_RU","lung_RM","lung_RL"].forEach(k=>b.expandByObject(M[k]));
+ }
+ if(z.fx==="inflame"){["bronchus","trachea"].forEach(k=>{M[k].material.color.setHex(0xe5484d);E(k,0x400808)});pulse=["bronchus"];}
+ if(z.fx==="clot"){M.pulm_artery.material.color.setHex(0x3f6fd6);const a=new THREE.Box3().setFromObject(M.pulm_artery);const c=a.getCenter(new THREE.Vector3());
+   const p=c.clone().add(new THREE.Vector3(-(a.max.x-a.min.x)*.18,0,(a.max.z-a.min.z)*.12));const s=sphere(p,9,0x5a0a12);pulse=["clot",s];}
+ if(z.fx==="consol"){M.lung_RL.material.color.setHex(0xb8565f);E("lung_RL",0x3a0d0d);const c=centerOf("lung_RL");
+   for(let i=0;i<9;i++)sphere(c.clone().add(new THREE.Vector3((Math.random()-.5)*60,(Math.random()-.6)*60,(Math.random()-.2)*55)),10+Math.random()*9,0xd9a441,.85);}
+ if(z.fx==="fluid"){const b=new THREE.Box3().setFromObject(M.lung_RL);const c=b.getCenter(new THREE.Vector3());const sz=b.getSize(new THREE.Vector3());
+   const m=new THREE.Mesh(new THREE.SphereGeometry(1,40,24,0,Math.PI*2,Math.PI*.55,Math.PI*.45),new THREE.MeshStandardMaterial({color:0x5aa0ff,transparent:true,opacity:.6,side:THREE.DoubleSide}));
+   m.scale.set(sz.x*.62,sz.y*.55,sz.z*.62);m.position.set(c.x,b.min.y+sz.y*.42,c.z);fx.add(m);
+   M.lung_RL.scale.multiplyScalar(.93);}
+ if(z.fx==="copd"){["lung_RU","lung_RM","lung_RL","lung_LU","lung_LL"].forEach(k=>{M[k].material.color.setHex(0xf3c9cf)});M.bronchus.material.color.setHex(0xe08a4a);E("bronchus",0x301204);}
+ if(z.fx==="asthma"){M.bronchus.material.color.setHex(0xf28c28);E("bronchus",0x3a1800);pulse=["bronchus"];}
+ if(z.fx==="mass"){const b=new THREE.Box3().setFromObject(M.lung_RU);const c=b.getCenter(new THREE.Vector3());sphere(c.clone().add(new THREE.Vector3(-12,10,18)),15,0x3a2a2e);}
+ if(z.fx==="bulge"){const b=new THREE.Box3().setFromObject(M.aorta);const c=b.getCenter(new THREE.Vector3());sphere(c.clone().add(new THREE.Vector3(2,-30,-4)),22,0xc93a48);E("aorta",0x2a0505);}
+}
+
+// arama
+const q=document.getElementById("q"),sug=document.getElementById("sug");let act=0,list=[];
+const norm=s=>s.toLocaleLowerCase("tr").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/ı/g,"i");
+function search(){const t=norm(q.value.trim());if(!t){sug.style.display="none";return}
+ list=DZ.filter(d=>[d.n,d.lat,...d.syn].some(s=>norm(s).includes(t)));act=0;
+ sug.innerHTML=list.length?list.map((d,i)=>`<li data-i="${i}" class="${i?"":"act"}"><span>${d.n}</span><small>${d.lat}</small></li>`).join(""):`<li style="cursor:default;color:#8FA3BF">Bu hastalık için görsel henüz hazırlanmadı</li>`;
+ sug.style.display="block";}
+q.addEventListener("input",search);q.addEventListener("focus",search);
+q.addEventListener("keydown",e=>{if(e.key==="Enter"&&list[act])pick(list[act]);if(e.key==="ArrowDown"){act=Math.min(act+1,list.length-1);mark()}if(e.key==="ArrowUp"){act=Math.max(act-1,0);mark()}});
+function mark(){[...sug.children].forEach((li,i)=>li.classList.toggle("act",i===act))}
+sug.addEventListener("click",e=>{const li=e.target.closest("li[data-i]");if(li)pick(list[+li.dataset.i])});
+function pick(d){curD=d;sick=true;q.value=d.n;sug.style.display="none";q.blur();
+ document.getElementById("pT").textContent=d.n;document.getElementById("pL").textContent=d.lat;document.getElementById("pD").textContent=d.d;
+ document.getElementById("pC").innerHTML=d.hi.filter((k,i,a)=>!(k.startsWith("lung")&&a.filter(x=>x.startsWith("lung")).length>2&&i>0)).map(k=>`<span><i style="background:#${COL[k].toString(16).padStart(6,"0")}"></i>${a2(k,d)}</span>`).join("");
+ document.getElementById("panel").classList.add("on");document.getElementById("hint").style.display="none";tog();apply();flyTo(d.focus);}
+const a2=(k,d)=>d.hi.filter(x=>x.startsWith("lung")).length>2&&k.startsWith("lung")?"Akciğerler":NAME[k];
+function tog(){document.getElementById("tS").classList.toggle("on",sick);document.getElementById("tH").classList.toggle("on",!sick)}
+document.getElementById("tS").onclick=()=>{sick=true;tog();apply()};document.getElementById("tH").onclick=()=>{sick=false;tog();apply()};
+document.getElementById("px").onclick=()=>{curD=null;reset();document.getElementById("panel").classList.remove("on");q.value="";
+ if(home)fly={t0:performance.now(),dur:1100,fp:cam.position.clone(),ft:ctl.target.clone(),tp:home.p.clone(),tt:home.t.clone()}};
+
+(function loop(t){requestAnimationFrame(loop);
+ if(fly){const k=Math.min(1,(t-fly.t0)/fly.dur),e=ease(k);cam.position.lerpVectors(fly.fp,fly.tp,e);ctl.target.lerpVectors(fly.ft,fly.tt,e);if(k>=1)fly=null}
+ if(pulse){const s=.5+.5*Math.sin(t/260);if(pulse[0]==="clot")pulse[1].scale.setScalar(1+.12*s);else pulse.forEach(k=>M[k]&&M[k].material.emissive.setRGB(.25*s,.05*s,0))}
+ ctl.update();R.render(S,cam);})(0);
+</script></body></html>
