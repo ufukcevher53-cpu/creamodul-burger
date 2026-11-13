@@ -20,6 +20,7 @@
 .panel .t{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .panel h2{font-size:20px}.panel .lat{color:#8FA3BF;font-size:13px;margin-top:2px}
 .panel p{font-size:15px;line-height:1.5;color:#C9D6E8;margin-top:10px}
+@media(max-width:600px){.panel p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}.panel p.open{display:block}.panel p:not(.open):after{content:""}#pM{display:block}}#pM{display:none;border:0;background:none;color:#60A5FA;font-weight:700;font-size:13px;padding:4px 0 0}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.chips span{font-size:12.5px;padding:5px 9px;border-radius:999px;background:#1B2A44;color:#BFD3F2}
 .chips i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
 .tog{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px;background:#0F1A2D;padding:5px;border-radius:12px}
@@ -29,6 +30,13 @@
 #pl{flex:none;width:42px;height:42px;border-radius:50%;border:0;background:#3B82F6;color:#fff;font-size:16px}
 #pg{width:100%;accent-color:#3B82F6}
 .tlb{display:flex;justify-content:space-between;font-size:11.5px;color:#8FA3BF;margin-top:2px}.tlb b{color:#fff;font-size:12px}
+.acts{display:flex;gap:6px}
+.mc{display:none;margin-top:10px;background:#0F1A2D;border-radius:12px;padding:8px 10px;gap:12px;align-items:center}.mc.on{display:flex}#mcS{width:92px;height:92px;flex:none}.mc b{display:block;font-size:12.5px;color:#BFD3F2}.mc span{display:block;font-size:13px;color:#fff;margin-top:4px;line-height:1.35}
+.shm{position:fixed;inset:0;background:rgba(5,10,20,.7);z-index:20;display:none;place-items:center;padding:16px}.shm.on{display:grid}
+.shb{background:#111A2B;border:1px solid #24324A;border-radius:18px;padding:18px;max-width:330px;width:100%;text-align:center}.shb p{font-size:13px;color:#8FA3BF;margin:6px 0 12px}
+#qrb{background:#fff;border-radius:12px;padding:10px;display:inline-block}#qrb img{display:block;width:200px;height:200px;image-rendering:pixelated}
+#shl{width:100%;margin-top:12px;background:#0B1220;border:1px solid #24324A;color:#BFD3F2;border-radius:10px;padding:9px;font-size:12px}
+.shr{display:flex;gap:8px;margin-top:10px}.shr button{flex:1;border:0;border-radius:10px;padding:11px;font-weight:700;background:#3B82F6;color:#fff}.shr button+button{background:#24324A}
 .x{border:0;background:#1B2A44;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;flex:none}
 .hint{position:fixed;left:0;right:0;bottom:38px;text-align:center;color:#8FA3BF;font-size:13px;z-index:4;pointer-events:none}
 .load{position:fixed;inset:0;display:grid;place-items:center;z-index:9;background:#0B1220;font-weight:700;color:#8FA3BF}
@@ -39,11 +47,12 @@
 <canvas id="c"></canvas>
 <div class="load" id="load">Model yükleniyor…</div>
 <div class="top"><div class="brand"><div class="lg">K</div><div><b>Klinik Adınız</b><small>Hastalığını yaz, vücutta gör</small></div></div>
-<div class="sbox"><input id="q" placeholder="Hastalık ara: bronşit, pnömotoraks…" autocomplete="off"><ul id="sug"></ul></div></div>
+<div class="sbox"><input id="q" placeholder="Hastalık veya organ ara: kalp krizi, bel fıtığı…" autocomplete="off"><ul id="sug"></ul></div></div>
 <div class="hint" id="hint">Parmakla döndür · iki parmakla yakınlaştır</div>
-<div class="panel" id="panel"><div class="t"><div><h2 id="pT"></h2><div class="lat" id="pL"></div></div><button class="x" id="px">✕</button></div>
+<div class="panel" id="panel"><div class="t"><div><h2 id="pT"></h2><div class="lat" id="pL"></div></div><div class="acts"><button class="x" id="pv" title="Sesli anlat">🔊</button><button class="x" id="psh" title="Paylaş / QR">⤴</button><button class="x" id="px">✕</button></div></div>
 <div class="tl"><button id="pl">▶</button><div style="flex:1"><input type="range" id="pg" min="0" max="100" value="0"><div class="tlb"><span>Sağlıklı</span><b id="ph">Sağlıklı</b><span>Hastalık</span></div></div></div>
-<p id="pD"></p><div class="chips" id="pC"></div></div>
+<div class="mc" id="mc"><svg id="mcS" viewBox="0 0 160 160"></svg><div><b id="mcT"></b><span id="mcC"></span></div><button id="mcx" hidden></button></div><p id="pD"></p><button id="pM">Devamını oku</button><div class="chips" id="pC"></div></div>
+<div class="shm" id="shm"><div class="shb"><b>Bu görünümü paylaş</b><p>Telefon kamerasıyla okutun; sayfa aynı hastalıkla açılır.</p><div id="qrb"></div><input id="shl" readonly><div class="shr"><button id="shc">Bağlantıyı kopyala</button><button id="shx">Kapat</button></div></div></div>
 <div class="lic">3D modeller: <a href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/" target="_blank">BodyParts3D</a> © DBCLS, CC BY-SA 2.1 JP · düzenlenmiş hâli CC BY-SA 4.0</div>
 
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
@@ -63,9 +72,15 @@ const dl2=new THREE.DirectionalLight(0x9fb8ff,.6);dl2.position.set(-500,200,-600
 addEventListener("resize",()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();R.setSize(innerWidth,innerHeight)});
 
 const COL={trachea:0xdfe7f2,bronchus:0xdfe7f2,lung_RU:0xf0a2ae,lung_RM:0xeb97a5,lung_RL:0xe88c9c,lung_LU:0xf0a2ae,lung_LL:0xe88c9c,
- pulm_artery:0x4f7fe0,pulm_vein:0xd94b5a,heart:0xc4404f,aorta:0xd94b5a,ribs:0xeee6d6,diaphragm:0xc98a72,svc:0x4f7fe0,skin:0xd9b8a6};
+ pulm_artery:0x4f7fe0,pulm_vein:0xd94b5a,heart:0xc4404f,aorta:0xd94b5a,ribs:0xeee6d6,diaphragm:0xc98a72,svc:0x4f7fe0,skin:0xd9b8a6,
+ liver:0x8e3b2f,gallbladder:0x6f8f3a,stomach:0xd88f86,pancreas:0xe3b27c,spleen:0x7a2f3f,duodenum:0xe0a08a,small_int:0xe7a593,colon:0xcf9a7c,kidney_R:0x9c3b3b,kidney_L:0x9c3b3b,
+ renal_a:0xd94b5a,renal_v:0x4f7fe0,bladder:0xe6c27a,prostate:0xc9877a,esophagus:0xd49a8a,ivc:0x4f7fe0,vert_L:0xeee6d6,disc_L1:0x9fc7e6,disc_L2:0x9fc7e6,disc_L3:0x9fc7e6,disc_L4:0x9fc7e6,disc_L5:0x9fc7e6,
+ lad:0xe0303f,lcx:0xe0303f,rca:0xe0303f,brain:0xe2b3b0,brain_wm:0xf3ece4,ventricles:0x7fb6e8};
 const NAME={trachea:"Soluk borusu (trakea)",bronchus:"Bronşlar",lung_RU:"Sağ akciğer üst lob",lung_RM:"Sağ akciğer orta lob",lung_RL:"Sağ akciğer alt lob",
- lung_LU:"Sol akciğer üst lob",lung_LL:"Sol akciğer alt lob",pulm_artery:"Akciğer atardamarı",pulm_vein:"Akciğer toplardamarı",heart:"Kalp",aorta:"Aort (ana atardamar)",ribs:"Kaburgalar",diaphragm:"Diyafram",svc:"Üst ana toplardamar"};
+ lung_LU:"Sol akciğer üst lob",lung_LL:"Sol akciğer alt lob",pulm_artery:"Akciğer atardamarı",pulm_vein:"Akciğer toplardamarı",heart:"Kalp",aorta:"Aort (ana atardamar)",ribs:"Kaburgalar",diaphragm:"Diyafram",svc:"Üst ana toplardamar",
+ liver:"Karaciğer",gallbladder:"Safra kesesi",stomach:"Mide",pancreas:"Pankreas",spleen:"Dalak",duodenum:"Onikiparmak bağırsağı",small_int:"İnce bağırsak",colon:"Kalın bağırsak",
+ kidney_R:"Sağ böbrek",kidney_L:"Sol böbrek",bladder:"İdrar kesesi",prostate:"Prostat",esophagus:"Yemek borusu",ivc:"Alt ana toplardamar",vert_L:"Bel omurları",
+ disc_L4:"L4-L5 disk",disc_L3:"L3-L4 disk",lad:"Kalp damarları (koroner)",lcx:"Kalp damarları (koroner)",rca:"Kalp damarları (koroner)",brain:"Beyin",ventricles:"Beyin karıncıkları"};
 const M={};const base={};let root;
 
 // Hastalıklar: sadece "vücutta ne oluyor" anlatılır, tavsiye yok.
@@ -73,22 +88,22 @@ const DZ=[
  {id:"ptx",n:"Akciğer sönmesi",lat:"Pnömotoraks · J93",syn:["pnömotoraks","pnomotoraks","akciğer çökmesi","sönmüş akciğer"],
   focus:["lung_RU","lung_RM","lung_RL"],hi:["lung_RU","lung_RM","lung_RL"],
   d:"Akciğer ile göğüs duvarı arasındaki ince boşluğa hava girer. Bu hava akciğeri dışarıdan sıkıştırır; akciğer büzüşür ve nefesle tam açılamaz. Görselde sağ akciğerin göğüs duvarından ayrılıp küçüldüğünü görüyorsunuz.",fx:"collapse"},
- {id:"bron",n:"Bronşit",lat:"Akut bronşit · J20",syn:["bronşit","bronsit","bronş iltihabı"],
+ {id:"bron",micro:"bron-inf",n:"Bronşit",lat:"Akut bronşit · J20",syn:["bronşit","bronsit","bronş iltihabı"],
   focus:["bronchus","trachea"],hi:["bronchus","trachea"],
   d:"Soluk borusundan akciğerlere uzanan hava yollarının (bronşlar) iç yüzeyi iltihaplanır ve şişer. Borular daralır, içlerinde balgam birikir. Görselde kırmızıya dönen kısım iltihaplı bronşlardır.",fx:"inflame"},
- {id:"emb",n:"Akciğer embolisi",lat:"Pulmoner emboli · I26",syn:["emboli","pulmoner emboli","akciğer pıhtısı","pıhtı"],
+ {id:"emb",micro:"art-emb",n:"Akciğer embolisi",lat:"Pulmoner emboli · I26",syn:["emboli","pulmoner emboli","akciğer pıhtısı","pıhtı"],
   focus:["pulm_artery","heart"],hi:["pulm_artery","lung_RL"],
   d:"Genellikle bacak toplardamarlarında oluşan bir pıhtı kopar, kalpten geçerek akciğer atardamarına gelir ve damarı tıkar. Tıkanan damarın beslediği akciğer bölümüne kan gidemez. Görselde mavi akciğer atardamarında koyu kırmızı pıhtıyı görüyorsunuz.",fx:"clot"},
- {id:"pnm",n:"Zatürre",lat:"Pnömoni · J18",syn:["pnömoni","pnomoni","zatürre","akciğer enfeksiyonu"],
+ {id:"pnm",micro:"alv-pus",n:"Zatürre",lat:"Pnömoni · J18",syn:["pnömoni","pnomoni","zatürre","akciğer enfeksiyonu"],
   focus:["lung_RL"],hi:["lung_RL"],
   d:"Akciğerin hava keseciklerine mikrop yerleşir. Kesecikler hava yerine iltihaplı sıvıyla dolar; o bölüm nefes alışverişine katılamaz. Görselde sağ akciğer alt lobunun koyulaşan bölümü iltihaplı alandır.",fx:"consol"},
  {id:"eff",n:"Akciğer zarında sıvı",lat:"Plevral efüzyon · J90",syn:["plevral efüzyon","efüzyon","akciğerde su","akciğer zarında su"],
   focus:["lung_RL","diaphragm"],hi:["lung_RL"],
   d:"Akciğeri saran iki katlı zarın arasında normalden fazla sıvı birikir. Sıvı yerçekimiyle alta toplanır ve akciğerin alt kısmını sıkıştırır. Görselde sağ akciğerin tabanında yavaşça yükselen açık sarı alan biriken sıvıdır.",fx:"fluid"},
- {id:"copd",n:"KOAH",lat:"Kronik obstrüktif akciğer hastalığı · J44",syn:["koah","amfizem","kronik bronşit"],
+ {id:"copd",micro:"alv-copd",n:"KOAH",lat:"Kronik obstrüktif akciğer hastalığı · J44",syn:["koah","amfizem","kronik bronşit"],
   focus:["lung_RU","lung_LU","bronchus"],hi:["lung_RU","lung_RM","lung_RL","lung_LU","lung_LL","bronchus"],
   d:"Hava yolları uzun süre daralır ve hava kesecikleri esnekliğini kaybeder. Verilen nefes tam boşalamaz, hava akciğerde hapsolur ve akciğer şişkin kalır. Görselde soluklaşan ve büyüyen akciğerleri, daralan bronşları görüyorsunuz.",fx:"copd"},
- {id:"ast",n:"Astım",lat:"Astım · J45",syn:["astım","astim","bronşiyal astım"],
+ {id:"ast",micro:"bron-ast",n:"Astım",lat:"Astım · J45",syn:["astım","astim","bronşiyal astım"],
   focus:["bronchus"],hi:["bronchus"],
   d:"Hava yollarının etrafındaki kaslar kasılır, iç yüzey şişer ve mukus artar. Bronşlar ataklar sırasında daralır, hava geçişi zorlaşır. Görselde nabız gibi atan turuncu bölge daralan hava yollarıdır.",fx:"asthma"},
  {id:"ca",n:"Akciğerde kitle",lat:"Akciğer tümörü · C34",syn:["akciğer kanseri","akciğer tümörü","kitle","nodül","akciğer nodülü"],
@@ -96,20 +111,72 @@ const DZ=[
   d:"Akciğer dokusunda hücrelerin kontrolsüz çoğalmasıyla bir kitle oluşur. Görselde sağ akciğer üst lobundaki koyu yuvarlak alan kitleyi temsil eder. Kitlenin türü ve büyüklüğü kişiye göre değişir; ayrıntıyı doktorunuz anlatacaktır.",fx:"mass"},
  {id:"anv",n:"Aort anevrizması",lat:"Torasik aort anevrizması · I71",syn:["anevrizma","aort anevrizması","aort genişlemesi"],
   focus:["aorta"],hi:["aorta"],
-  d:"Vücudun ana atardamarı olan aortun duvarı zayıflar ve bir bölümü balon gibi genişler. Görselde göğüsten aşağı inen aortun üzerindeki şişkinliği görüyorsunuz.",fx:"bulge"}
+  d:"Vücudun ana atardamarı olan aortun duvarı zayıflar ve bir bölümü balon gibi genişler. Görselde göğüsten aşağı inen aortun üzerindeki şişkinliği görüyorsunuz.",fx:"bulge"},
+ {id:"mi",n:"Kalp krizi",lat:"Miyokard enfarktüsü · I21",syn:["kalp krizi","miyokard enfarktüsü","enfarktüs","mi","kalp spazmı"],
+  focus:["heart","lad"],hi:["heart","lad","lcx","rca"],micro:"art-mi",
+  d:"Kalbi besleyen damarlardan (koroner damarlar) birinin içinde yıllar içinde yağlı bir plak birikir. Plak çatlayınca üstünde pıhtı oluşur ve damarı tıkar. O damarın beslediği kalp kası kansız ve oksijensiz kalır. Görselde sarı plağı, üstündeki koyu pıhtıyı ve kararan kalp kası bölgesini görüyorsunuz.",fx:"mi"},
+ {id:"cad",n:"Koroner arter hastalığı",lat:"Koroner damar sertliği · I25",syn:["koroner arter hastalığı","damar sertliği","ateroskleroz","kalp damar tıkanıklığı","koroner"],
+  focus:["heart","lad"],hi:["heart","lad","lcx","rca"],micro:"art",
+  d:"Kalbi besleyen damarların iç duvarında yağ, kolesterol ve hücre artıklarından oluşan plaklar birikir. Damar içi daralır ve kalp kasına giden kan azalır. Görselde damarlar boyunca biriken sarı plakları görüyorsunuz.",fx:"cad"},
+ {id:"hf",n:"Kalp yetmezliği",lat:"Kalp yetmezliği · I50",syn:["kalp yetmezliği","kalp büyümesi","kardiyomiyopati"],
+  focus:["heart","lung_LL"],hi:["heart"],
+  d:"Kalp kası vücudun ihtiyacı kadar kanı pompalayamaz hâle gelir. Kalp zamanla genişler; pompalanamayan kan akciğerlere doğru geri birikir ve akciğer dokusunda sıvı toplanır. Görselde büyüyen kalbi ve maviye dönen akciğerleri görüyorsunuz.",fx:"hf"},
+ {id:"fl",n:"Karaciğer yağlanması",lat:"Yağlı karaciğer · K76.0",syn:["karaciğer yağlanması","yağlı karaciğer","hepatosteatoz","steatoz"],
+  focus:["liver"],hi:["liver"],
+  d:"Karaciğer hücrelerinin içinde normalden fazla yağ birikir. Karaciğer biraz büyür ve rengi sarımsı bir tona döner. Görselde karaciğerde biriken yağ damlacıklarını görüyorsunuz.",fx:"fattyLiver"},
+ {id:"cir",n:"Siroz",lat:"Karaciğer sirozu · K74",syn:["siroz","karaciğer sirozu","karaciğer sertleşmesi"],
+  focus:["liver","spleen"],hi:["liver","spleen"],
+  d:"Uzun süreli hasar sonucu sağlıklı karaciğer dokusunun yerini sert nedbe dokusu ve düğümcükler alır. Karaciğer küçülür, yüzeyi pürüzlenir; kan akışı zorlaştığı için dalak büyüyebilir. Görselde düğümlü hâle gelen karaciğeri görüyorsunuz.",fx:"cirrhosis"},
+ {id:"gs",n:"Safra kesesi taşı",lat:"Kolelitiazis · K80",syn:["safra taşı","safra kesesi taşı","kolelitiazis","safra kesesi"],
+  focus:["gallbladder","liver"],hi:["gallbladder"],
+  d:"Karaciğerin ürettiği safra, safra kesesinde depolanır. Safradaki kolesterol veya pigment çökerek taş oluşturur. Taşlar büyüyebilir, kesenin çıkışını tıkayıp kese duvarında iltihaba yol açabilir. Görselde kesenin içinde oluşan taşları görüyorsunuz.",fx:"gallstone"},
+ {id:"gst",n:"Gastrit",lat:"Gastrit · K29",syn:["gastrit","mide iltihabı","mide yanması"],
+  focus:["stomach"],hi:["stomach"],
+  d:"Midenin iç yüzeyini kaplayan koruyucu tabaka (mukoza) iltihaplanır, kızarır ve şişer. Görselde mide yüzeyinde yayılan kırmızı alanlar iltihabı gösterir.",fx:"gastritis"},
+ {id:"ulc",n:"Mide ülseri",lat:"Peptik ülser · K25",syn:["ülser","mide ülseri","peptik ülser","mide yarası"],
+  focus:["stomach"],hi:["stomach"],
+  d:"Mide asidi, koruyucu tabakanın zayıfladığı bir noktada mide duvarını aşındırır ve bir yara açar. Yaranın çevresi iltihaplanır. Görselde mide duvarında koyulaşan yarayı görüyorsunuz.",fx:"ulcer"},
+ {id:"pan",n:"Pankreatit",lat:"Akut pankreatit · K85",syn:["pankreatit","pankreas iltihabı"],
+  focus:["pancreas","duodenum"],hi:["pancreas"],
+  d:"Pankreasın ürettiği sindirim enzimleri bağırsağa gitmeden pankreasın içinde etkinleşir ve organın kendisini tahriş eder. Pankreas şişer, kızarır; çevresine sıvı sızar. Görselde şişen pankreası ve etrafındaki sıvıyı görüyorsunuz.",fx:"pancreatitis"},
+ {id:"ks",n:"Böbrek taşı",lat:"Nefrolitiazis · N20",syn:["böbrek taşı","nefrolitiazis","idrar yolu taşı","kum"],
+  focus:["kidney_R"],hi:["kidney_R","kidney_L"],
+  d:"İdrardaki mineraller kristalleşip böbreğin içinde taş oluşturur. Taş idrarın akış yolunu daraltırsa idrar böbrekte birikir ve böbrek şişer. Görselde sağ böbrek içinde büyüyen taşları görüyorsunuz.",fx:"kidneyStone"},
+ {id:"lhd",n:"Bel fıtığı",lat:"Lomber disk hernisi · M51",syn:["bel fıtığı","disk hernisi","lomber disk","fıtık","bel ağrısı"],
+  focus:["disc_L4","vert_L"],hi:["disc_L4","vert_L"],side:-2.2,
+  d:"Omurlar arasında yastık görevi gören diskin dış halkası yıpranır ve yırtılır. Diskin jöle kıvamındaki iç kısmı arkaya doğru taşar ve yakınındaki sinir köküne baskı yapar. Görselde L4-L5 diskinin taşan kısmını ve sarı sinir kökünü görüyorsunuz.",fx:"disc"},
+ {id:"str",n:"İnme",lat:"Beyin enfarktüsü · I63",syn:["inme","felç","beyin krizi","serebrovasküler olay","inme felç"],
+  focus:["brain"],hi:["brain"],
+  d:"Beyni besleyen bir damar pıhtıyla tıkanır ve o damarın beslediği beyin bölgesine kan gidemez. Kansız kalan bölgedeki sinir hücreleri zarar görür. Görselde beynin bir bölgesinde yayılan koyu alanı görüyorsunuz.",fx:"stroke"},
+ {id:"hyd",n:"Hidrosefali",lat:"Hidrosefali · G91",syn:["hidrosefali","beyinde su","beyinde sıvı"],
+  focus:["brain"],hi:["ventricles"],
+  d:"Beynin içindeki boşluklarda (karıncıklar) dolaşan beyin omurilik sıvısı normal yoluyla boşalamaz ve birikir. Karıncıklar genişler ve çevresindeki beyin dokusuna baskı yapar. Görselde mavi karıncıkların büyüdüğünü görüyorsunuz.",fx:"hydro"},
+ {id:"bph",n:"Prostat büyümesi",lat:"Benign prostat hiperplazisi · N40",syn:["prostat büyümesi","prostat","bph","iyi huylu prostat büyümesi"],
+  focus:["prostate","bladder"],hi:["prostate","bladder"],
+  d:"İdrar kesesinin hemen altında, idrar yolunu çevreleyen prostat bezi zamanla büyür. Büyüyen prostat idrar yolunu daraltır. Görselde prostatın büyüyerek idrar kesesinin çıkışına baskı yaptığını görüyorsunuz.",fx:"bph"},
+ {id:"crc",n:"Kalın bağırsakta kitle",lat:"Kolorektal tümör · C18",syn:["kolon kanseri","kalın bağırsak kanseri","bağırsak kanseri","kolon tümörü","bağırsakta kitle"],
+  focus:["colon"],hi:["colon"],a:{k:"colon",dir:[-1,.05,.35],side:[1,-10],op:.6,off:[4,0,0],r:13,col:0x5a1426,em:0x3a0612,L:pt=>[[pt,"Bağırsak duvarında büyüyen kitle",-1,.4],[ctrOf("colon").add(new THREE.Vector3(30,30,0)),"Kalın bağırsak",1,0]]},
+  d:"Kalın bağırsağın iç duvarındaki hücreler kontrolsüz çoğalarak bir kitle oluşturur. Kitle büyüdükçe bağırsak içini daraltabilir. Görselde bağırsak duvarındaki koyu kitleyi görüyorsunuz.",fx:"mass"}
+
 ];
 
 const fx=new THREE.Group();let pulse=null,anim=null;const labels=[];
 R.localClippingEnabled=true;
+function reg(o){const k=o.name.replace(/_\d+$/,"");const c=COL[k]??0xcccccc;
+  o.geometry.computeVertexNormals();
+  o.material=new THREE.MeshStandardMaterial({color:c,roughness:k==="ribs"?.7:.55,metalness:0,transparent:true,opacity:k==="skin"?.12:k.startsWith("lung")?.82:k==="brain"?.5:1,depthWrite:k!=="skin",side:k==="skin"?THREE.FrontSide:THREE.DoubleSide});
+  M[k]=o;base[k]={c,op:o.material.opacity,s:o.scale.clone(),p:o.position.clone(),pos:o.geometry.attributes.position.array.slice(),mat:o.material};}
+let extraOK=false,pendingPick=null;
 new GLTFLoader().load("models/thorax.glb",g=>{
  root=g.scene;root.rotation.x=-Math.PI/2;S.add(root);S.add(fx);root.updateMatrixWorld(true);
- root.traverse(o=>{if(o.isMesh){const k=o.name.replace(/_\d+$/,"");const c=COL[k]??0xcccccc;
-  o.geometry.computeVertexNormals();
-  o.material=new THREE.MeshStandardMaterial({color:c,roughness:k==="ribs"?.7:.55,metalness:0,transparent:true,opacity:k==="skin"?.12:k.startsWith("lung")?.82:1,depthWrite:k!=="skin",side:k==="skin"?THREE.FrontSide:THREE.DoubleSide});
-  M[k]=o;base[k]={c,op:o.material.opacity,s:o.scale.clone(),p:o.position.clone(),pos:o.geometry.attributes.position.array.slice(),mat:o.material};}});
+ root.traverse(o=>{if(o.isMesh)reg(o)});
  const box=new THREE.Box3().setFromObject(M.ribs);const ctr=box.getCenter(new THREE.Vector3());
  home={t:ctr.clone().add(new THREE.Vector3(0,-40,0)),p:ctr.clone().add(new THREE.Vector3(0,30,980))};
  cam.position.copy(home.p);ctl.target.copy(home.t);document.getElementById("load").remove();
+ const dq=new URLSearchParams(location.search).get("d");const dd=dq&&DZ.find(x=>x.id===dq);if(dd)setTimeout(()=>pick(dd),300);
+ new GLTFLoader().load("models/extra.glb",g2=>{const ms=[];g2.scene.traverse(o=>{if(o.isMesh)ms.push(o)});
+  ms.forEach(o=>{root.add(o);o.position.set(0,0,0);o.rotation.set(0,0,0);o.scale.set(1,1,1)});root.updateMatrixWorld(true);ms.forEach(reg);extraOK=true;
+  if(pendingPick){const d=pendingPick;pendingPick=null;pick(d)}});
 },undefined,e=>{document.getElementById("load").textContent="Model yüklenemedi"});
 let home;
 
@@ -170,6 +237,21 @@ function patchyU(m,col2,scale){const U={c2:{value:new THREE.Color(col2)},amt:{va
  float nn=n3(vW*${scale.toFixed(3)})*.65+n3(vW*${(scale*2.7).toFixed(3)})*.35;float k=smoothstep(1.02-amt*.75,1.1-amt*.75,nn+ .0);
  diffuseColor.rgb=mix(diffuseColor.rgb,c2,k);`)};m.customProgramCacheKey=()=>"pu"+scale;m._p=true;m.needsUpdate=true;return U}
 
+function nearV(key,pt){const o=M[key],a=o.geometry.attributes.position,v=new THREE.Vector3();o.updateMatrixWorld();let best=pt.clone(),bd=1e9;
+ for(let i=0;i<a.count;i+=2){v.fromBufferAttribute(a,i).applyMatrix4(o.matrixWorld);const d=v.distanceTo(pt);if(d<bd){bd=d;best=v.clone()}}return best}
+function seedsIn(key,n,r,col){const o=M[key],a=o.geometry.attributes.position,c=ctrOf(key),v=new THREE.Vector3(),out=[];o.updateMatrixWorld();
+ for(let i=0;i<n;i++){v.fromBufferAttribute(a,Math.floor(Math.random()*a.count)).applyMatrix4(o.matrixWorld);v.lerp(c,.45+Math.random()*.45);
+  const m=addMesh(blob(r*(.6+Math.random()*.7),1+Math.random()*3),mat(col,1,{roughness:.7}),v.clone());m.scale.setScalar(.001);m.userData.d=Math.random();out.push(m)}return out}
+const NOISE=`float h(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453);}
+ float n3(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+  return mix(mix(mix(h(i),h(i+vec3(1,0,0)),f.x),mix(h(i+vec3(0,1,0)),h(i+vec3(1,1,0)),f.x),f.y),mix(mix(h(i+vec3(0,0,1)),h(i+vec3(1,0,1)),f.x),mix(h(i+vec3(0,1,1)),h(i+vec3(1,1,1)),f.x),f.y),f.z);}`;
+function regionU(m,ctr,col2,R){const U={c2:{value:new THREE.Color(col2)},amt:{value:0},ct:{value:ctr.clone()}};m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);
+ sh.vertexShader=sh.vertexShader.replace("#include <common>","#include <common>\nvarying vec3 vW;").replace("#include <worldpos_vertex>","#include <worldpos_vertex>\nvW=(modelMatrix*vec4(transformed,1.)).xyz;");
+ sh.fragmentShader=sh.fragmentShader.replace("#include <common>","#include <common>\nvarying vec3 vW;uniform vec3 c2;uniform float amt;uniform vec3 ct;\n"+NOISE)
+ .replace("#include <color_fragment>",`#include <color_fragment>
+ float nn=n3(vW*.09)*.6+n3(vW*.23)*.4;float rr=${R.toFixed(1)}*amt;float k=amt>.01?1.-smoothstep(rr-3.,rr+3.,distance(vW,ct)+(nn-.5)*${R.toFixed(1)}*.5):0.;
+ diffuseColor.rgb=mix(diffuseColor.rgb,c2,k);`)};m.customProgramCacheKey=()=>"rg"+R;m._p=true;m.needsUpdate=true;return U}
+
 const FX={
  collapse(){const pv=ctrOf("bronchus").lerp(ctrOf("lung_RM"),.3);const sh=RIGHT.map(k=>ghost(k,1.0,0xbfe0ff,0,null,{emissive:0x0a2a55}));const s0=Object.fromEntries(RIGHT.map(k=>[k,snap(k)]));
   const lat=surf("lung_RL",new THREE.Vector3(-1,0,.3));
@@ -201,9 +283,11 @@ const FX={
  asthma(){const mu=seeds("bronchus",80,1.8,0xf3e3a0);
   const L=[[ctrOf("bronchus").add(new THREE.Vector3(-50,-15,10)),"Kasılan bronş kasları",-1,.3],[ctrOf("bronchus").add(new THREE.Vector3(50,-30,10)),"Artan mukus",1,.65]];
   return p=>{const k=sm(.1,.5,p);lerpC(M.bronchus.material,0xdfe7f2,0xef8a2a,k);pulse=k>.5?{t:"squeeze"}:null;grow(mu,p,.5,1);return L}},
- mass(){const pt=surf("lung_RU",new THREE.Vector3(-.5,.5,1));M.lung_RU.material.opacity=.4;M.ribs.material.opacity=.03;
-  const m=addMesh(blob(17,3),mat(0x6b2f2a,1,{roughness:.8,emissive:0x2a0905}),pt.clone().add(new THREE.Vector3(3,0,-4)));const halo=addMesh(new THREE.SphereGeometry(22,32,24),mat(0xffd27a,0),m.position);
-  const L=[[pt,"Kitle: düzensiz sınırlı doku",-1,.4],[ctrOf("bronchus"),"Ana bronşlar",1,0]];
+ mass(d){const a=d.a||{k:"lung_RU",dir:[-.5,.5,1],op:.4};let pt=surf(a.k,new THREE.Vector3(...a.dir));if(a.side){const o=M[a.k],at=o.geometry.attributes.position,v=new THREE.Vector3(),c=ctrOf(a.k);o.updateMatrixWorld();let bx=1e9;
+  for(let i=0;i<at.count;i+=2){v.fromBufferAttribute(at,i).applyMatrix4(o.matrixWorld);if(Math.abs(v.y-c.y-a.side[1])<12&&v.x*a.side[0]<bx){bx=v.x*a.side[0];pt=v.clone()}}let bz=-1e9;const x0=pt.x;
+  for(let i=0;i<at.count;i+=2){v.fromBufferAttribute(at,i).applyMatrix4(o.matrixWorld);if(Math.abs(v.y-c.y-a.side[1])<14&&Math.abs(v.x-x0)<14&&v.z>bz){bz=v.z;pt=v.clone()}}}M[a.k].material.opacity=a.op;M.ribs.material.opacity=.03;
+  const m=addMesh(blob(a.r||17,3),mat(a.col||0x6b2f2a,1,{roughness:.8,emissive:a.em||0x2a0905}),pt.clone().add(new THREE.Vector3(...(a.off||[3,0,-4]))));const halo=addMesh(new THREE.SphereGeometry(22,32,24),mat(0xffd27a,0),m.position);
+  const L=a.L?a.L(pt):[[pt,"Kitle: düzensiz sınırlı doku",-1,.4],[ctrOf("bronchus"),"Ana bronşlar",1,0]];
   return p=>{const k=sm(.05,1,p);m.scale.setScalar(.08+.92*k);m.rotation.y=k*.6;halo.scale.setScalar(.2+.9*k);halo.material.opacity=.22*sm(.6,1,p);return L}},
  bulge(){const o=M.aorta,pa=o.geometry.attributes.position,arr=pa.array,orig=base.aorta.pos;const b=new THREE.Box3().setFromBufferAttribute(pa);
   const z0=b.min.z+(b.max.z-b.min.z)*.42,w=38;let cx=0,cy=0,n=0;for(let i=0;i<pa.count;i++){if(Math.abs(orig[i*3+2]-z0)<6){cx+=orig[i*3];cy+=orig[i*3+1];n++}}cx/=n;cy/=n;
@@ -212,14 +296,100 @@ const FX={
   const L=[[ctrOf("heart"),"Kalp",-1,0],[wp,"Balon gibi genişleyen aort duvarı",1,.5]];
   return p=>{const k=sm(.05,1,p);idx.forEach(([i,w])=>{const f=1+1.25*w*k;arr[i*3]=cx+(orig[i*3]-cx)*f;arr[i*3+1]=cy+(orig[i*3+1]-cy)*f});pa.needsUpdate=true;o.geometry.computeVertexNormals();
    lerpC(o.material,0xd94b5a,0xb3303d,k);return L}}
+ ,
+ mi(){const pt=nearV("lad",ctrOf("lad").add(new THREE.Vector3(0,6,0)));
+  const pl=addMesh(blob(4.2,2),mat(0xf2d27a,1,{roughness:.6}),pt);pl.scale.setScalar(.001);
+  const cl=addMesh(blob(3.8,3),mat(0x4a0710,1,{roughness:.8}),pt.clone().add(new THREE.Vector3(1,0,1.5)));cl.scale.setScalar(.001);
+  const zc=surf("heart",new THREE.Vector3(.35,-.6,1));const U=regionU(M.heart.material,zc,0x3a1a28,46);
+  const L=[[ctrOf("lad").add(new THREE.Vector3(10,25,0)),"Kalbi besleyen damar (koroner)",1,0],[pt,"Damar içinde biriken yağlı plak",-1,.12],[pt.clone().add(new THREE.Vector3(3,-3,0)),"Plak çatlar, üstünde pıhtı oluşur",1,.5],[zc,"Kan alamayan kalp kası",1,.72]];
+  return p=>{const a=sm(0,.45,p);pl.scale.setScalar(Math.max(.001,a));const c=sm(.45,.62,p);cl.scale.setScalar(Math.max(.001,c));cl.visible=c>.01;
+   lerpC(M.lad.material,0xe0303f,0x7a1f2b,sm(.55,.7,p));U.amt.value=sm(.6,1,p);return L}},
+ cad(){const a=seeds("lad",16,1.9,0xf2d27a),b=seeds("rca",12,1.9,0xf2d27a),c=seeds("lcx",8,1.9,0xf2d27a);const all=[...a,...b,...c];
+  const L=[[ctrOf("lad"),"Kalbi besleyen damarlar",1,0],[ctrOf("rca"),"Damar duvarına yapışan yağlı plaklar",-1,.35],[ctrOf("heart").add(new THREE.Vector3(0,-30,0)),"Daralan damar, kalbe giden kan azalır",1,.7]];
+  return p=>{grow(all,p,.05,.9);["lad","rca","lcx"].forEach(k=>lerpC(M[k].material,0xe0303f,0xa8473f,sm(.3,1,p)));return L}},
+ hf(){const s0=snap("heart"),pv=ctrOf("heart");const lu=LUNGS.filter(k=>M[k]);
+  const L=[[ctrOf("heart"),"Genişleyen, pompalama gücü azalan kalp",1,.25],[ctrOf("lung_LL"),"Akciğerlerde geriye biriken sıvı",1,.65],[ctrOf("lung_RL"),"Su toplayan akciğer dokusu",-1,.8]];
+  return p=>{const k=sm(.05,.8,p);shrinkTo("heart",s0,1+.16*k,pv);lerpC(M.heart.material,0xc4404f,0xb0606a,k);
+   lu.forEach(x=>{M[x].material.opacity=Math.max(M[x].material.opacity,.3*sm(.55,1,p));lerpC(M[x].material,base[x].c,0x9fb2d6,sm(.55,1,p))});return L}},
+ fattyLiver(){const s0=snap("liver"),pv=ctrOf("liver");const dr=seeds("liver",90,2.6,0xf6dc8a);
+  const L=[[ctrOf("liver"),"Karaciğer hücrelerinde biriken yağ",-1,.3],[surf("liver",new THREE.Vector3(-.5,.2,1)),"Büyüyen, sarımsı renk alan karaciğer",-1,.7]];
+  return p=>{const k=sm(.1,1,p);shrinkTo("liver",s0,1+.07*k,pv);lerpC(M.liver.material,0x8e3b2f,0xc99a55,k);grow(dr,p,.15,.9);return L}},
+ cirrhosis(){const s0=snap("liver"),pv=ctrOf("liver");const U=patchyU(M.liver.material,0x9a7b3a,.11);const s1=snap("spleen"),pv2=ctrOf("spleen");
+  const L=[[ctrOf("liver"),"Sağlıklı dokunun yerini alan sert nedbe dokusu",-1,.3],[surf("liver",new THREE.Vector3(-.4,.3,1)),"Küçülen, yüzeyi pürüzlenen karaciğer",-1,.6],[ctrOf("spleen"),"Büyüyen dalak",1,.8]];
+  return p=>{U.amt.value=sm(.05,.8,p);shrinkTo("liver",s0,1-.14*sm(.3,1,p),pv);lerpC(M.liver.material,0x8e3b2f,0x7d4a2e,sm(.3,1,p));shrinkTo("spleen",s1,1+.18*sm(.6,1,p),pv2);return L}},
+ gallstone(){M.gallbladder.material.opacity=.42;const st=seedsIn("gallbladder",7,3.6,0x6b5320);
+  const L=[[ctrOf("gallbladder"),"Safra kesesi",-1,0],[ctrOf("gallbladder").add(new THREE.Vector3(0,-6,4)),"Safradan çöken taşlar",1,.35],[ctrOf("liver"),"Karaciğer (safrayı üretir)",-1,0]];
+  return p=>{grow(st,p,.05,.85);lerpC(M.gallbladder.material,0x6f8f3a,0xa0503a,sm(.75,1,p));return L}},
+ gastritis(){const U=patchyU(M.stomach.material,0xb3202c,.09);
+  const L=[[ctrOf("stomach"),"Midenin iç yüzeyi (mukoza)",1,0],[surf("stomach",new THREE.Vector3(.3,0,1)),"Kızaran, şişen mide iç yüzeyi",1,.45]];
+  return p=>{U.amt.value=sm(.05,1,p);return L}},
+ ulcer(){const zc=surf("stomach",new THREE.Vector3(-.1,-.6,1));const U=regionU(M.stomach.material,zc,0x4a0d14,9);const U2=null;
+  const halo=addMesh(new THREE.SphereGeometry(16,24,16),mat(0xd8343c,0),zc);
+  const L=[[ctrOf("stomach").add(new THREE.Vector3(10,20,0)),"Mide",1,0],[zc,"Mide duvarında açılan yara (ülser)",-1,.45],[zc.clone().add(new THREE.Vector3(0,-8,0)),"Çevresinde iltihaplı doku",1,.7]];
+  return p=>{U.amt.value=sm(.2,1,p);halo.material.opacity=.22*sm(.4,1,p);halo.scale.setScalar(.3+.8*sm(.3,1,p));return L}},
+ pancreatitis(){const s0=snap("pancreas"),pv=ctrOf("pancreas");const g=ghost("pancreas",1.12,0xF2D27A,0,pv);
+  const L=[[ctrOf("pancreas"),"Kendi sindirim sıvılarıyla iltihaplanan pankreas",1,.3],[ctrOf("pancreas").add(new THREE.Vector3(-30,-5,5)),"Çevresine sızan sıvı",-1,.65],[ctrOf("duodenum"),"Onikiparmak bağırsağı",-1,0]];
+  return p=>{const k=sm(.05,.8,p);shrinkTo("pancreas",s0,1+.14*k,pv);lerpC(M.pancreas.material,0xe3b27c,0xd8443c,k);M.pancreas.material.emissive.setRGB(.25*k,.03*k,0);g.material.opacity=.32*sm(.5,1,p);return L}},
+ kidneyStone(){M.kidney_R.material.opacity=.45;const st=seedsIn("kidney_R",5,3.4,0xc9a24a);const s0=snap("kidney_R"),pv=ctrOf("kidney_R");
+  const L=[[ctrOf("kidney_R"),"Böbrekte kristallerden oluşan taşlar",-1,.3],[ctrOf("kidney_R").add(new THREE.Vector3(0,30,0)),"İdrar akışı zorlaşınca şişen böbrek",-1,.75],[ctrOf("kidney_L"),"Sağlıklı sol böbrek",1,0]];
+  return p=>{grow(st,p,.05,.7);shrinkTo("kidney_R",s0,1+.1*sm(.7,1,p),pv);lerpC(M.kidney_R.material,0x9c3b3b,0xb5484a,sm(.7,1,p));return L}},
+ disc(){const o=M.disc_L4,pa=o.geometry.attributes.position,arr=pa.array,orig=base.disc_L4.pos;M.vert_L.material.opacity=.5;
+  let cx=0,cy=0,cz=0,mx=-1e9;for(let i=0;i<pa.count;i++){cx+=orig[i*3];cy+=orig[i*3+1];cz+=orig[i*3+2];mx=Math.max(mx,orig[i*3+1])}cx/=pa.count;cy/=pa.count;cz/=pa.count;
+  const hx=22,side=8;const idx=[];for(let i=0;i<pa.count;i++){const y=orig[i*3+1],x=orig[i*3];if(y>cy){const w=Math.pow((y-cy)/(mx-cy),1.4)*Math.exp(-Math.pow((x-cx-side)/(hx*.55),2));if(w>.02)idx.push([i,w])}}
+  o._def=true;root.updateMatrixWorld(true);const W=(x,y,z)=>new THREE.Vector3(x,y,z).applyMatrix4(root.matrixWorld);
+  const nv=new THREE.Mesh(new THREE.CylinderGeometry(2.6,2.6,90,16),mat(0xf3d36b,1,{roughness:.5}));nv.position.copy(W(cx+side+4,mx+9,cz-10));nv.rotation.z=.12;fx.add(nv);
+  const L=[[W(cx,cy-10,cz+18),"Omur",1,0],[W(cx,cy,cz),"Omurlar arası disk (L4-L5)",-1,0],[W(cx+side,mx+4,cz),"Diskin dışarı taşan iç kısmı (fıtık)",1,.4],[nv.position.clone().add(new THREE.Vector3(0,30,0)),"Baskı altındaki sinir kökü",1,.7]];
+  return p=>{const k=sm(.05,.85,p);idx.forEach(([i,w])=>{arr[i*3+1]=orig[i*3+1]+16*w*k;arr[i*3]=orig[i*3]+3*w*k});pa.needsUpdate=true;o.geometry.computeVertexNormals();
+   lerpC(o.material,0x9fc7e6,0xe3a36b,sm(.3,1,p));lerpC(nv.material,0xf3d36b,0xe2483d,sm(.65,1,p));nv.material.emissive.setRGB(.25*sm(.65,1,p),0,0);return L}},
+ stroke(){const zc=surf("brain",new THREE.Vector3(.7,.2,.7));const U=regionU(M.brain.material,zc,0x4b2a3a,34);
+  const L=[[ctrOf("brain").add(new THREE.Vector3(-20,20,0)),"Beyin",-1,0],[zc,"Kanı kesilen beyin bölgesi",1,.45]];
+  return p=>{U.amt.value=sm(.1,1,p);return L}},
+ hydro(){M.brain.material.opacity=.32;const s0=snap("ventricles"),pv=ctrOf("ventricles");
+  const L=[[ctrOf("ventricles"),"Beyin omurilik sıvısıyla dolu karıncıklar",1,0],[ctrOf("ventricles").add(new THREE.Vector3(-18,6,0)),"Sıvı birikince genişleyen karıncıklar",-1,.5],[ctrOf("brain").add(new THREE.Vector3(0,40,0)),"Baskı altındaki beyin dokusu",1,.75]];
+  return p=>{shrinkTo("ventricles",s0,1+.55*sm(.05,1,p),pv);return L}},
+ bph(){const s0=snap("prostate"),pv=ctrOf("prostate");M.bladder.material.opacity=.6;
+  const L=[[ctrOf("bladder"),"İdrar kesesi",1,0],[ctrOf("prostate"),"Büyüyen prostat",-1,.35],[ctrOf("prostate").add(new THREE.Vector3(0,14,0)),"Daralan idrar çıkış yolu",1,.7]];
+  return p=>{shrinkTo("prostate",s0,1+.6*sm(.05,1,p),pv);return L}}
+
 };
 let curD=null,sick=true,step=null,P=0,playing=false,pT0=0;const DUR=7000;
 function apply(){reset();step=null;if(!curD)return;const z=curD;dim([...z.hi,...z.focus]);z.hi.forEach(k=>{M[k].material.opacity=1});
- if(FX[z.fx])step=FX[z.fx]();setP(sick?P:0)}
+ if(FX[z.fx])step=FX[z.fx](z);setP(sick?P:0)}
 function setP(p){P=p;labels.length=0;if(step){const L=step(p)||[];L.forEach(([pt,t,side,at])=>{if(p>=at)labels.push({p:pt,t,side})})}
- const sl=document.getElementById("pg");if(sl)sl.value=Math.round(p*100);const ph=document.getElementById("ph");if(ph)ph.textContent=p<.02?"Sağlıklı":p>.98?"Hastalık tam gelişmiş":"Süreç ilerliyor…";}
+ const sl=document.getElementById("pg");if(sl)sl.value=Math.round(p*100);if(curD&&curD.micro)micro(curD.micro,p);const ph=document.getElementById("ph");if(ph)ph.textContent=p<.02?"Sağlıklı":p>.98?"Hastalık tam gelişmiş":"Süreç ilerliyor…";}
 function play(){playing=true;pT0=performance.now()-P*DUR;if(P>=.999){P=0;pT0=performance.now()}document.getElementById("pl").textContent="⏸";}
 function stop(){playing=false;document.getElementById("pl").textContent="▶"}
+
+// ---------- yakın plan (mikroskobik) çizimi ----------
+const MT={"alv":"Yakın plan: hava kesecikleri","bron":"Yakın plan: bronş kesiti","art":"Yakın plan: damar kesiti"};
+const rnd=(i,j)=>{const x=Math.sin(i*127.1+j*311.7)*43758.5453;return x-Math.floor(x)};
+const mixH=(a,b,k)=>{const A=parseInt(a.slice(1),16),B=parseInt(b.slice(1),16);const c=[16,8,0].map(s=>Math.round(((A>>s)&255)*(1-k)+((B>>s)&255)*k));return"#"+c.map(v=>v.toString(16).padStart(2,"0")).join("")};
+function micro(type,p){const [kind,v]=type.split("-");let g="";
+ if(kind==="alv"){const C=[[80,80],[50,62],[110,62],[50,100],[110,100],[80,44],[80,118]];
+  if(v==="copd"){const m=sm(.2,1,p);g+=`<circle cx="80" cy="81" r="${54*m}" fill="#f7dfe3" stroke="#d98a98" stroke-width="2" opacity="${m}"/>`}
+  C.forEach(([x,y],i)=>{const fill=v==="pus"?mixH("#fbe9ec","#e7c25a",sm(.35+.05*i,.9,p)):"#fbe9ec";const op=v==="copd"?1-sm(.2+.08*i,.7+.04*i,p):1;
+   g+=`<circle cx="${x}" cy="${y}" r="19" fill="${fill}" stroke="#d98a98" stroke-width="2.4" opacity="${op}"/>`;
+   for(let j=0;j<5;j++){const a=rnd(i,j)*6.28;g+=`<circle cx="${x+21*Math.cos(a)}" cy="${y+21*Math.sin(a)}" r="2.2" fill="#c0303a" opacity="${op}"/>`}});
+  if(v==="pus")for(let i=0;i<46;i++){const c=C[i%7],a=rnd(i,1)*6.28,r=rnd(i,2)*14;const k=sm(rnd(i,3)*.5,rnd(i,3)*.5+.25,p);if(k>.01)g+=`<ellipse cx="${c[0]+r*Math.cos(a)}" cy="${c[1]+r*Math.sin(a)}" rx="${2.8*k}" ry="${1.5*k}" transform="rotate(${rnd(i,4)*180} ${c[0]+r*Math.cos(a)} ${c[1]+r*Math.sin(a)})" fill="#4f9a45"/>`}
+  if(v==="copd")g+=`<text x="80" y="152" text-anchor="middle" font-size="10" fill="#8FA3BF">${p>.5?"Duvarlar yıkılır, kesecikler birleşir":"Normal: çok sayıda küçük kese"}</text>`;
+ }
+ if(kind==="bron"){const th=v==="ast"?sm(.1,.6,p):sm(.05,.8,p);const lum=v==="ast"?36-20*th:36-14*th;
+  g+=`<circle cx="80" cy="78" r="64" fill="${v==="ast"?mixH("#f2c9a8","#ef8a2a",th):"#f2c9a8"}" stroke="#c98f6a" stroke-width="2"/>`;
+  g+=`<circle cx="80" cy="78" r="${lum+10+6*th}" fill="${mixH("#f4b8b8","#d8343c",v==="ast"?th*.4:th)}"/>`;
+  g+=`<circle cx="80" cy="78" r="${lum}" fill="#0F1A2D"/>`;
+  const mu=v==="ast"?sm(.5,1,p):sm(.4,1,p);for(let i=0;i<9;i++){const a=rnd(i,7)*6.28,r=rnd(i,8)*lum*.7;if(mu>.02)g+=`<circle cx="${80+r*Math.cos(a)}" cy="${78+r*Math.sin(a)}" r="${(3+rnd(i,9)*5)*mu}" fill="#e6cf72"/>`}
+  g+=`<text x="80" y="156" text-anchor="middle" font-size="10" fill="#8FA3BF">${v==="ast"?"Kas halkası kasılır, iç çap daralır":"Duvar şişer, içeride balgam birikir"}</text>`;
+ }
+ if(kind==="art"){const pl=v==="emb"?0:(v==="mi"?sm(0,.45,p):sm(.05,1,p));const cl=v==="emb"?sm(.3,.7,p):v==="mi"?sm(.45,.62,p):0;
+  g+=`<defs><clipPath id="lm"><circle cx="80" cy="76" r="44"/></clipPath></defs>`;
+  g+=`<circle cx="80" cy="76" r="62" fill="#d97a80" stroke="#b5535b" stroke-width="2"/><circle cx="80" cy="76" r="50" fill="#f0b3b6"/>`;
+  g+=`<circle cx="80" cy="76" r="44" fill="#b3202c"/>`;
+  for(let i=0;i<14;i++){const a=rnd(i,5)*6.28,r=rnd(i,6)*36;g+=`<ellipse cx="${80+r*Math.cos(a)}" cy="${76+r*Math.sin(a)}" rx="4.5" ry="3" fill="#e0505a" opacity=".85"/>`}
+  if(pl>.01)g+=`<g clip-path="url(#lm)"><circle cx="${142-40*pl}" cy="76" r="${18+30*pl}" fill="#f2d27a" stroke="#d9b24a" stroke-width="1.5"/></g>`;
+  if(cl>.01)g+=`<g clip-path="url(#lm)"><circle cx="${v==="emb"?80:66}" cy="76" r="${(v==="emb"?46:30)*cl}" fill="#4a0710"/></g>`;
+  g+=`<text x="80" y="154" text-anchor="middle" font-size="10" fill="#8FA3BF">${v==="emb"?(p>.5?"Pıhtı damarı tamamen tıkar":"Sağlıklı damar, kan akıyor"):v==="mi"?(p>.5?"Plak çatlar, pıhtı damarı kapatır":"Damar duvarında plak büyür"):(p>.5?"Plak damar içini daraltır":"Damar duvarında plak başlar")}</text>`;
+ }
+ const tm=g.match(/<text[^>]*>(.*?)<\/text>/);g=g.replace(/<text.*?<\/text>/,"");document.getElementById("mcT").textContent=MT[kind];document.getElementById("mcC").textContent=tm?tm[1]:"";document.getElementById("mcS").innerHTML=g;}
 
 // etiket katmanı
 const svgL=document.createElementNS("http://www.w3.org/2000/svg","svg");svgL.style.cssText="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:3";document.body.appendChild(svgL);
@@ -234,22 +404,35 @@ function drawLabels(){svgL.innerHTML="";labBox.innerHTML="";const W=innerWidth,H
 // arama
 const q=document.getElementById("q"),sug=document.getElementById("sug");let act=0,list=[];
 const norm=s=>s.toLocaleLowerCase("tr").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/ı/g,"i");
-function search(){const t=norm(q.value.trim());if(!t){sug.style.display="none";return}
- list=DZ.filter(d=>[d.n,d.lat,...d.syn].some(s=>norm(s).includes(t)));act=0;
- sug.innerHTML=list.length?list.map((d,i)=>`<li data-i="${i}" class="${i?"":"act"}"><span>${d.n}</span><small>${d.lat}</small></li>`).join(""):`<li style="cursor:default;color:#8FA3BF">Bu hastalık için görsel henüz hazırlanmadı</li>`;
+function search(){const t=norm(q.value.trim());
+ list=t?DZ.filter(d=>[d.n,d.lat,...d.syn,...d.hi.map(k=>NAME[k]||"")].some(s=>norm(s).includes(t))):DZ.slice();act=0;
+ sug.innerHTML=list.length?list.map((d,i)=>`<li data-i="${i}" class="${i?"":"act"}"><span>${d.n}</span><small>${d.lat}</small></li>`).join(""):`<li style="cursor:default;color:#8FA3BF;display:block;line-height:1.45">“${q.value.trim()}” için 3D anlatım henüz hazırlanmadı.<br><small style="white-space:normal">Şu an ${DZ.length} hastalık hazır. Organ adıyla da arayabilirsiniz: kalp, karaciğer, böbrek, beyin, bel…</small></li>`;
  sug.style.display="block";}
 q.addEventListener("input",search);q.addEventListener("focus",search);
 q.addEventListener("keydown",e=>{if(e.key==="Enter"&&list[act])pick(list[act]);if(e.key==="ArrowDown"){act=Math.min(act+1,list.length-1);mark()}if(e.key==="ArrowUp"){act=Math.max(act-1,0);mark()}});
 function mark(){[...sug.children].forEach((li,i)=>li.classList.toggle("act",i===act))}
 sug.addEventListener("click",e=>{const li=e.target.closest("li[data-i]");if(li)pick(list[+li.dataset.i])});
-function pick(d){curD=d;sick=true;q.value=d.n;sug.style.display="none";q.blur();
- document.getElementById("pT").textContent=d.n;document.getElementById("pL").textContent=d.lat;document.getElementById("pD").textContent=d.d;
- document.getElementById("pC").innerHTML=d.hi.filter((k,i,a)=>!(k.startsWith("lung")&&a.filter(x=>x.startsWith("lung")).length>2&&i>0)).map(k=>`<span><i style="background:#${COL[k].toString(16).padStart(6,"0")}"></i>${a2(k,d)}</span>`).join("");
- document.getElementById("panel").classList.add("on");document.getElementById("hint").style.display="none";P=0;apply();flyTo(d.focus);setTimeout(play,900);}
+function pick(d){if(!extraOK&&d.focus.some(k=>!M[k])){pendingPick=d;q.value=d.n+" · yükleniyor…";sug.style.display="none";q.blur();return}
+ window.speechSynthesis&&speechSynthesis.cancel();document.getElementById("mc").classList.toggle("on",!!d.micro);
+ try{history.replaceState(null,"","?d="+d.id)}catch(e){}
+ curD=d;sick=true;q.value=d.n;sug.style.display="none";q.blur();
+ document.getElementById("pT").textContent=d.n;document.getElementById("pL").textContent=d.lat;document.getElementById("pD").textContent=d.d;document.getElementById("pD").classList.remove("open");document.getElementById("pM").textContent="Devamını oku";
+ document.getElementById("pC").innerHTML=d.hi.filter((k,i,a)=>!(k.startsWith("lung")&&a.filter(x=>x.startsWith("lung")).length>2&&i>0)).filter((k,i,a)=>a.findIndex(x=>a2(x,d)===a2(k,d))===i).map(k=>`<span><i style="background:#${COL[k].toString(16).padStart(6,"0")}"></i>${a2(k,d)}</span>`).join("");
+ document.getElementById("panel").classList.add("on");document.getElementById("hint").style.display="none";P=0;apply();flyTo(d.focus,d.side||0);setTimeout(play,900);}
 const a2=(k,d)=>d.hi.filter(x=>x.startsWith("lung")).length>2&&k.startsWith("lung")?"Akciğerler":NAME[k];
+document.getElementById("pM").onclick=()=>{const e=document.getElementById("pD");e.classList.toggle("open");document.getElementById("pM").textContent=e.classList.contains("open")?"Daha az göster":"Devamını oku"};
 document.getElementById("pl").onclick=()=>playing?stop():play();
 document.getElementById("pg").addEventListener("input",e=>{stop();setP(e.target.value/100)});
-document.getElementById("px").onclick=()=>{stop();curD=null;step=null;reset();document.getElementById("panel").classList.remove("on");q.value="";
+document.getElementById("mcx").onclick=()=>{const m=document.getElementById("mc");m.classList.toggle("min");document.getElementById("mcx").textContent=m.classList.contains("min")?"+":"–"};
+document.getElementById("pv").onclick=()=>{if(!window.speechSynthesis||!curD)return;if(speechSynthesis.speaking){speechSynthesis.cancel();return}
+ const u=new SpeechSynthesisUtterance(curD.n+". "+curD.d.replace(/Görselde/g,"Ekranda"));u.lang="tr-TR";u.rate=.95;const v=speechSynthesis.getVoices().find(v=>v.lang&&v.lang.startsWith("tr"));if(v)u.voice=v;speechSynthesis.speak(u);
+ if(!playing){P=0;play()}};
+let qrLib=null;function loadQR(){return qrLib||(qrLib=new Promise((res,rej)=>{const sc=document.createElement("script");sc.src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js";sc.onload=()=>res(window.qrcode);sc.onerror=rej;document.head.appendChild(sc)}))}
+document.getElementById("psh").onclick=async()=>{if(!curD)return;const url=location.origin+location.pathname+"?d="+curD.id;document.getElementById("shl").value=url;document.getElementById("shm").classList.add("on");
+ try{const qr=await loadQR();const c=qr(0,"M");c.addData(url);c.make();document.getElementById("qrb").innerHTML=c.createImgTag(6,8)}catch(e){document.getElementById("qrb").textContent="QR yüklenemedi"}};
+document.getElementById("shx").onclick=()=>document.getElementById("shm").classList.remove("on");
+document.getElementById("shc").onclick=async()=>{const u=document.getElementById("shl").value;try{if(navigator.share){await navigator.share({title:curD.n,url:u});return}await navigator.clipboard.writeText(u);document.getElementById("shc").textContent="Kopyalandı ✓"}catch(e){document.getElementById("shl").select()}};
+document.getElementById("px").onclick=()=>{stop();window.speechSynthesis&&speechSynthesis.cancel();document.getElementById("mc").classList.remove("on");try{history.replaceState(null,"",location.pathname)}catch(e){}curD=null;step=null;reset();document.getElementById("panel").classList.remove("on");q.value="";
  if(home)fly={t0:performance.now(),dur:1100,fp:cam.position.clone(),ft:ctl.target.clone(),tp:home.p.clone(),tt:home.t.clone()}};
 
 (function loop(t){requestAnimationFrame(loop);
