@@ -75,12 +75,12 @@ const COL={trachea:0xdfe7f2,bronchus:0xdfe7f2,lung_RU:0xf0a2ae,lung_RM:0xeb97a5,
  pulm_artery:0x4f7fe0,pulm_vein:0xd94b5a,heart:0xc4404f,aorta:0xd94b5a,ribs:0xeee6d6,diaphragm:0xc98a72,svc:0x4f7fe0,skin:0xd9b8a6,
  liver:0x8e3b2f,gallbladder:0x6f8f3a,stomach:0xd88f86,pancreas:0xe3b27c,spleen:0x7a2f3f,duodenum:0xe0a08a,small_int:0xe7a593,colon:0xcf9a7c,kidney_R:0x9c3b3b,kidney_L:0x9c3b3b,
  renal_a:0xd94b5a,renal_v:0x4f7fe0,bladder:0xe6c27a,prostate:0xc9877a,esophagus:0xd49a8a,ivc:0x4f7fe0,vert_L:0xeee6d6,disc_L1:0x9fc7e6,disc_L2:0x9fc7e6,disc_L3:0x9fc7e6,disc_L4:0x9fc7e6,disc_L5:0x9fc7e6,
- lad:0xe0303f,lcx:0xe0303f,rca:0xe0303f,brain:0xe2b3b0,brain_wm:0xf3ece4,ventricles:0x7fb6e8};
+ lad:0xe0303f,lcx:0xe0303f,rca:0xe0303f,brain:0xe6c3bd,cerebellum:0xd9aaa6,brainstem:0xd8b8a8,mca_L:0xd9434f,mca_R:0xd9434f,cer_art:0xd9434f,ventricles:0x7fb6e8};
 const NAME={trachea:"Soluk borusu (trakea)",bronchus:"Bronşlar",lung_RU:"Sağ akciğer üst lob",lung_RM:"Sağ akciğer orta lob",lung_RL:"Sağ akciğer alt lob",
  lung_LU:"Sol akciğer üst lob",lung_LL:"Sol akciğer alt lob",pulm_artery:"Akciğer atardamarı",pulm_vein:"Akciğer toplardamarı",heart:"Kalp",aorta:"Aort (ana atardamar)",ribs:"Kaburgalar",diaphragm:"Diyafram",svc:"Üst ana toplardamar",
  liver:"Karaciğer",gallbladder:"Safra kesesi",stomach:"Mide",pancreas:"Pankreas",spleen:"Dalak",duodenum:"Onikiparmak bağırsağı",small_int:"İnce bağırsak",colon:"Kalın bağırsak",
  kidney_R:"Sağ böbrek",kidney_L:"Sol böbrek",bladder:"İdrar kesesi",prostate:"Prostat",esophagus:"Yemek borusu",ivc:"Alt ana toplardamar",vert_L:"Bel omurları",
- disc_L4:"L4-L5 disk",disc_L3:"L3-L4 disk",lad:"Kalp damarları (koroner)",lcx:"Kalp damarları (koroner)",rca:"Kalp damarları (koroner)",brain:"Beyin",ventricles:"Beyin karıncıkları"};
+ disc_L4:"L4-L5 disk",disc_L3:"L3-L4 disk",lad:"Kalp damarları (koroner)",lcx:"Kalp damarları (koroner)",rca:"Kalp damarları (koroner)",brain:"Beyin",cerebellum:"Beyincik",brainstem:"Beyin sapı",mca_L:"Beyin damarları",mca_R:"Beyin damarları",cer_art:"Beyin damarları",ventricles:"Beyin karıncıkları"};
 const M={};const base={};let root;
 
 // Hastalıklar: sadece "vücutta ne oluyor" anlatılır, tavsiye yok.
@@ -146,10 +146,10 @@ const DZ=[
   focus:["disc_L4","vert_L"],hi:["disc_L4","vert_L"],side:-2.2,
   d:"Omurlar arasında yastık görevi gören diskin dış halkası yıpranır ve yırtılır. Diskin jöle kıvamındaki iç kısmı arkaya doğru taşar ve yakınındaki sinir köküne baskı yapar. Görselde L4-L5 diskinin taşan kısmını ve sarı sinir kökünü görüyorsunuz.",fx:"disc"},
  {id:"str",n:"İnme",lat:"Beyin enfarktüsü · I63",syn:["inme","felç","beyin krizi","serebrovasküler olay","inme felç"],
-  focus:["brain"],hi:["brain"],
-  d:"Beyni besleyen bir damar pıhtıyla tıkanır ve o damarın beslediği beyin bölgesine kan gidemez. Kansız kalan bölgedeki sinir hücreleri zarar görür. Görselde beynin bir bölgesinde yayılan koyu alanı görüyorsunuz.",fx:"stroke"},
+  focus:["brain"],hi:["brain","mca_L","cerebellum","brainstem"],side:2.6,micro:"art-emb",
+  d:"Beyni besleyen bir damar pıhtıyla tıkanır ve o damarın beslediği beyin bölgesine kan gidemez. Kansız kalan bölgedeki sinir hücreleri zarar görür. Görselde orta beyin atardamarındaki pıhtıyı ve bu damarın beslediği, kararan beyin bölgesini görüyorsunuz.",fx:"stroke"},
  {id:"hyd",n:"Hidrosefali",lat:"Hidrosefali · G91",syn:["hidrosefali","beyinde su","beyinde sıvı"],
-  focus:["brain"],hi:["ventricles"],
+  focus:["ventricles"],hi:["ventricles"],side:.5,
   d:"Beynin içindeki boşluklarda (karıncıklar) dolaşan beyin omurilik sıvısı normal yoluyla boşalamaz ve birikir. Karıncıklar genişler ve çevresindeki beyin dokusuna baskı yapar. Görselde mavi karıncıkların büyüdüğünü görüyorsunuz.",fx:"hydro"},
  {id:"bph",n:"Prostat büyümesi",lat:"Benign prostat hiperplazisi · N40",syn:["prostat büyümesi","prostat","bph","iyi huylu prostat büyümesi"],
   focus:["prostate","bladder"],hi:["prostate","bladder"],
@@ -164,7 +164,7 @@ const fx=new THREE.Group();let pulse=null,anim=null;const labels=[];
 R.localClippingEnabled=true;
 function reg(o){const k=o.name.replace(/_\d+$/,"");const c=COL[k]??0xcccccc;
   o.geometry.computeVertexNormals();
-  o.material=new THREE.MeshStandardMaterial({color:c,roughness:k==="ribs"?.7:.55,metalness:0,transparent:true,opacity:k==="skin"?.12:k.startsWith("lung")?.82:k==="brain"?.5:1,depthWrite:k!=="skin",side:k==="skin"?THREE.FrontSide:THREE.DoubleSide});
+  o.material=new THREE.MeshStandardMaterial({color:c,roughness:k==="ribs"?.7:.55,metalness:0,transparent:true,opacity:k==="skin"?.12:k.startsWith("lung")?.82:1,depthWrite:k!=="skin",side:k==="skin"?THREE.FrontSide:THREE.DoubleSide});
   M[k]=o;base[k]={c,op:o.material.opacity,s:o.scale.clone(),p:o.position.clone(),pos:o.geometry.attributes.position.array.slice(),mat:o.material};}
 let extraOK=false,pendingPick=null;
 new GLTFLoader().load("models/thorax.glb",g=>{
@@ -213,7 +213,7 @@ function patchy(m,col2,scale=.045,thr=.15){m.onBeforeCompile=sh=>{sh.uniforms.c2
  float nn=n3(vW*${scale.toFixed(3)})*.65+n3(vW*${(scale*2.7).toFixed(3)})*.35;float k=smoothstep(.5-${thr.toFixed(2)},.5+${thr.toFixed(2)},nn);
  diffuseColor.rgb=mix(diffuseColor.rgb,c2,k);`)};m.needsUpdate=true}
 
-function reset(){for(const k in M){const o=M[k],b=base[k];o.material=b.mat;if(b.mat._p){b.mat.onBeforeCompile=()=>{};b.mat.customProgramCacheKey=()=>"";b.mat._p=false;b.mat.needsUpdate=true}o.material.color.setHex(b.c);o.material.opacity=b.op;o.material.emissive.setHex(0);
+function reset(){for(const k in M){const o=M[k],b=base[k];o.material=b.mat;if(b.mat._p){b.mat.onBeforeCompile=()=>{};b.mat.customProgramCacheKey=()=>"";b.mat._p=false;b.mat.needsUpdate=true}o.material.color.setHex(b.c);o.material.opacity=b.op;o.material.emissive.setHex(0);o.material.depthWrite=k!=="skin";
   o.scale.copy(b.s);o.position.copy(b.p);o.visible=true;const pa=o.geometry.attributes.position;if(pa.array!==b.pos&&pa.array.length===b.pos.length&&o._def){pa.array.set(b.pos);pa.needsUpdate=true;o.geometry.computeVertexNormals();o._def=false}}
  root&&root.updateMatrixWorld(true);fx.clear();pulse=null;anim=null;labels.length=0;}
 function dim(except){for(const k in M){if(k==="skin")continue;if(!except.includes(k))M[k].material.opacity=Math.min(M[k].material.opacity,k==="ribs"?.06:.14)}}
@@ -341,10 +341,12 @@ const FX={
   const L=[[W(cx,cy-10,cz+18),"Omur",1,0],[W(cx,cy,cz),"Omurlar arası disk (L4-L5)",-1,0],[W(cx+side,mx+4,cz),"Diskin dışarı taşan iç kısmı (fıtık)",1,.4],[nv.position.clone().add(new THREE.Vector3(0,30,0)),"Baskı altındaki sinir kökü",1,.7]];
   return p=>{const k=sm(.05,.85,p);idx.forEach(([i,w])=>{arr[i*3+1]=orig[i*3+1]+16*w*k;arr[i*3]=orig[i*3]+3*w*k});pa.needsUpdate=true;o.geometry.computeVertexNormals();
    lerpC(o.material,0x9fc7e6,0xe3a36b,sm(.3,1,p));lerpC(nv.material,0xf3d36b,0xe2483d,sm(.65,1,p));nv.material.emissive.setRGB(.25*sm(.65,1,p),0,0);return L}},
- stroke(){const zc=surf("brain",new THREE.Vector3(.7,.2,.7));const U=regionU(M.brain.material,zc,0x4b2a3a,34);
-  const L=[[ctrOf("brain").add(new THREE.Vector3(-20,20,0)),"Beyin",-1,0],[zc,"Kanı kesilen beyin bölgesi",1,.45]];
-  return p=>{U.amt.value=sm(.1,1,p);return L}},
- hydro(){M.brain.material.opacity=.32;const s0=snap("ventricles"),pv=ctrOf("ventricles");
+ stroke(){M.brain.material.opacity=.8;root.updateMatrixWorld(true);const W=(x,y,z)=>new THREE.Vector3(x,y,z).applyMatrix4(root.matrixWorld);
+  const cp=nearV("mca_L",W(22,-104,1536));const cl=addMesh(blob(3.2,2),mat(0x3a0509,1,{roughness:.8}),cp);cl.scale.setScalar(.001);
+  const zc=surf("brain",new THREE.Vector3(1,.15,.05));const U=regionU(M.brain.material,zc,0x4b2a3a,52);
+  const L=[[ctrOf("mca_L").add(new THREE.Vector3(0,22,0)),"Orta beyin atardamarı ve dalları",1,0],[cp,"Damarı tıkayan pıhtı",-1,.3],[zc,"Kanı kesilen beyin bölgesi",1,.6],[surf("cerebellum",new THREE.Vector3(1,-.3,-.6)),"Beyincik",-1,0]];
+  return p=>{const c=sm(.1,.35,p);cl.scale.setScalar(Math.max(.001,c));cl.visible=c>.01;lerpC(M.mca_L.material,0xd9434f,0x5b4650,sm(.35,.6,p));U.amt.value=sm(.45,1,p);return L}},
+ hydro(){M.brain.material.opacity=.16;M.brain.material.depthWrite=false;M.cerebellum.material.opacity=.2;M.ventricles.material.emissive.setHex(0x0d3060);const s0=snap("ventricles"),pv=ctrOf("ventricles");
   const L=[[ctrOf("ventricles"),"Beyin omurilik sıvısıyla dolu karıncıklar",1,0],[ctrOf("ventricles").add(new THREE.Vector3(-18,6,0)),"Sıvı birikince genişleyen karıncıklar",-1,.5],[ctrOf("brain").add(new THREE.Vector3(0,40,0)),"Baskı altındaki beyin dokusu",1,.75]];
   return p=>{shrinkTo("ventricles",s0,1+.55*sm(.05,1,p),pv);return L}},
  bph(){const s0=snap("prostate"),pv=ctrOf("prostate");M.bladder.material.opacity=.6;
