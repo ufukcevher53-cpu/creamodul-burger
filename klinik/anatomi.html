@@ -25,6 +25,10 @@
 .tog{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px;background:#0F1A2D;padding:5px;border-radius:12px}
 .tog button{border:0;border-radius:9px;padding:9px;font:700 14px inherit;font-family:inherit;color:#8FA3BF;background:transparent}
 .tog button.on{background:#24324A;color:#fff}
+.tl{display:flex;gap:12px;align-items:center;margin-top:12px;background:#0F1A2D;padding:10px 12px;border-radius:12px}
+#pl{flex:none;width:42px;height:42px;border-radius:50%;border:0;background:#3B82F6;color:#fff;font-size:16px}
+#pg{width:100%;accent-color:#3B82F6}
+.tlb{display:flex;justify-content:space-between;font-size:11.5px;color:#8FA3BF;margin-top:2px}.tlb b{color:#fff;font-size:12px}
 .x{border:0;background:#1B2A44;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;flex:none}
 .hint{position:fixed;left:0;right:0;bottom:38px;text-align:center;color:#8FA3BF;font-size:13px;z-index:4;pointer-events:none}
 .load{position:fixed;inset:0;display:grid;place-items:center;z-index:9;background:#0B1220;font-weight:700;color:#8FA3BF}
@@ -38,7 +42,7 @@
 <div class="sbox"><input id="q" placeholder="Hastalık ara: bronşit, pnömotoraks…" autocomplete="off"><ul id="sug"></ul></div></div>
 <div class="hint" id="hint">Parmakla döndür · iki parmakla yakınlaştır</div>
 <div class="panel" id="panel"><div class="t"><div><h2 id="pT"></h2><div class="lat" id="pL"></div></div><button class="x" id="px">✕</button></div>
-<div class="tog"><button id="tH">Sağlıklı</button><button id="tS" class="on">Hastalıklı</button></div>
+<div class="tl"><button id="pl">▶</button><div style="flex:1"><input type="range" id="pg" min="0" max="100" value="0"><div class="tlb"><span>Sağlıklı</span><b id="ph">Sağlıklı</b><span>Hastalık</span></div></div></div>
 <p id="pD"></p><div class="chips" id="pC"></div></div>
 <div class="lic">3D modeller: <a href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/" target="_blank">BodyParts3D</a> © DBCLS, CC BY-SA 2.1 JP · düzenlenmiş hâli CC BY-SA 4.0</div>
 
@@ -73,14 +77,14 @@ const DZ=[
   focus:["bronchus","trachea"],hi:["bronchus","trachea"],
   d:"Soluk borusundan akciğerlere uzanan hava yollarının (bronşlar) iç yüzeyi iltihaplanır ve şişer. Borular daralır, içlerinde balgam birikir. Görselde kırmızıya dönen kısım iltihaplı bronşlardır.",fx:"inflame"},
  {id:"emb",n:"Akciğer embolisi",lat:"Pulmoner emboli · I26",syn:["emboli","pulmoner emboli","akciğer pıhtısı","pıhtı"],
-  focus:["pulm_artery","heart"],hi:["pulm_artery"],
+  focus:["pulm_artery","heart"],hi:["pulm_artery","lung_RL"],
   d:"Genellikle bacak toplardamarlarında oluşan bir pıhtı kopar, kalpten geçerek akciğer atardamarına gelir ve damarı tıkar. Tıkanan damarın beslediği akciğer bölümüne kan gidemez. Görselde mavi akciğer atardamarında koyu kırmızı pıhtıyı görüyorsunuz.",fx:"clot"},
  {id:"pnm",n:"Zatürre",lat:"Pnömoni · J18",syn:["pnömoni","pnomoni","zatürre","akciğer enfeksiyonu"],
   focus:["lung_RL"],hi:["lung_RL"],
   d:"Akciğerin hava keseciklerine mikrop yerleşir. Kesecikler hava yerine iltihaplı sıvıyla dolar; o bölüm nefes alışverişine katılamaz. Görselde sağ akciğer alt lobunun koyulaşan bölümü iltihaplı alandır.",fx:"consol"},
  {id:"eff",n:"Akciğer zarında sıvı",lat:"Plevral efüzyon · J90",syn:["plevral efüzyon","efüzyon","akciğerde su","akciğer zarında su"],
   focus:["lung_RL","diaphragm"],hi:["lung_RL"],
-  d:"Akciğeri saran iki katlı zarın arasında normalden fazla sıvı birikir. Sıvı yerçekimiyle alta toplanır ve akciğerin alt kısmını sıkıştırır. Görselde sağ akciğerin tabanındaki mavi alan biriken sıvıdır.",fx:"fluid"},
+  d:"Akciğeri saran iki katlı zarın arasında normalden fazla sıvı birikir. Sıvı yerçekimiyle alta toplanır ve akciğerin alt kısmını sıkıştırır. Görselde sağ akciğerin tabanında yavaşça yükselen açık sarı alan biriken sıvıdır.",fx:"fluid"},
  {id:"copd",n:"KOAH",lat:"Kronik obstrüktif akciğer hastalığı · J44",syn:["koah","amfizem","kronik bronşit"],
   focus:["lung_RU","lung_LU","bronchus"],hi:["lung_RU","lung_RM","lung_RL","lung_LU","lung_LL","bronchus"],
   d:"Hava yolları uzun süre daralır ve hava kesecikleri esnekliğini kaybeder. Verilen nefes tam boşalamaz, hava akciğerde hapsolur ve akciğer şişkin kalır. Görselde soluklaşan ve büyüyen akciğerleri, daralan bronşları görüyorsunuz.",fx:"copd"},
@@ -95,57 +99,137 @@ const DZ=[
   d:"Vücudun ana atardamarı olan aortun duvarı zayıflar ve bir bölümü balon gibi genişler. Görselde göğüsten aşağı inen aortun üzerindeki şişkinliği görüyorsunuz.",fx:"bulge"}
 ];
 
-const fx=new THREE.Group();let pulse=null;
+const fx=new THREE.Group();let pulse=null,anim=null;const labels=[];
+R.localClippingEnabled=true;
 new GLTFLoader().load("models/thorax.glb",g=>{
  root=g.scene;root.rotation.x=-Math.PI/2;S.add(root);S.add(fx);root.updateMatrixWorld(true);
  root.traverse(o=>{if(o.isMesh){const k=o.name.replace(/_\d+$/,"");const c=COL[k]??0xcccccc;
   o.geometry.computeVertexNormals();
   o.material=new THREE.MeshStandardMaterial({color:c,roughness:k==="ribs"?.7:.55,metalness:0,transparent:true,opacity:k==="skin"?.12:k.startsWith("lung")?.82:1,depthWrite:k!=="skin",side:k==="skin"?THREE.FrontSide:THREE.DoubleSide});
-  M[k]=o;base[k]={c,op:o.material.opacity,s:o.scale.clone(),p:o.position.clone()};}});
+  M[k]=o;base[k]={c,op:o.material.opacity,s:o.scale.clone(),p:o.position.clone(),pos:o.geometry.attributes.position.array.slice(),mat:o.material};}});
  const box=new THREE.Box3().setFromObject(M.ribs);const ctr=box.getCenter(new THREE.Vector3());
  home={t:ctr.clone().add(new THREE.Vector3(0,-40,0)),p:ctr.clone().add(new THREE.Vector3(0,30,980))};
  cam.position.copy(home.p);ctl.target.copy(home.t);document.getElementById("load").remove();
 },undefined,e=>{document.getElementById("load").textContent="Model yüklenemedi"});
 let home;
 
-// kamera uçuşu
+// ---------- yardımcılar ----------
 let fly=null;
-function flyTo(keys){const b=new THREE.Box3();keys.forEach(k=>M[k]&&b.expandByObject(M[k]));const c=b.getCenter(new THREE.Vector3());const sz=b.getSize(new THREE.Vector3()).length();
- const dir=new THREE.Vector3(.18,.12,1).normalize();const d=Math.max(300,sz*1.5)*(innerWidth<600?1.7:1.1);
+function flyTo(keys,side=0){const b=new THREE.Box3();keys.forEach(k=>M[k]&&b.expandByObject(M[k]));const c=b.getCenter(new THREE.Vector3());const sz=b.getSize(new THREE.Vector3()).length();
+ const dir=new THREE.Vector3(side,.1,1).normalize();const d=Math.max(300,sz*1.5)*(innerWidth<600?1.7:1.1);
  fly={t0:performance.now(),dur:1300,fp:cam.position.clone(),ft:ctl.target.clone(),tp:c.clone().add(dir.multiplyScalar(d)).add(new THREE.Vector3(0,-d*.13,0)),tt:c.clone().add(new THREE.Vector3(0,-d*.13,0))};}
 const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const RIGHT=["lung_RU","lung_RM","lung_RL"],LUNGS=[...RIGHT,"lung_LU","lung_LL"];
+function boxOf(keys){const b=new THREE.Box3();[].concat(keys).forEach(k=>b.expandByObject(M[k]));return b}
+function ctrOf(keys){return boxOf(keys).getCenter(new THREE.Vector3())}
+const ray=new THREE.Raycaster();
+function surf(key,dir){const c=ctrOf(key);const d=dir.clone().normalize();ray.set(c.clone().add(d.clone().multiplyScalar(600)),d.clone().negate());
+ const h=ray.intersectObject(M[key],false);return h.length?h[0].point:c}
+function mat(col,op=1,extra={}){return new THREE.MeshStandardMaterial(Object.assign({color:col,roughness:.45,metalness:0,transparent:op<1,opacity:op,depthWrite:op>=1},extra))}
+function addMesh(geo,m,at){const x=new THREE.Mesh(geo,m);if(at)x.position.copy(at);fx.add(x);return x}
+function ghost(key,scale,col,op,pivot,extra={}){const src=M[key];const g=src.geometry.clone();const m=new THREE.Mesh(g,mat(col,op,Object.assign({side:THREE.DoubleSide},extra)));
+ src.updateMatrixWorld();m.applyMatrix4(src.matrixWorld);
+ if(scale!==1){const pv=pivot||ctrOf(key);m.position.sub(pv).multiplyScalar(scale).add(pv);m.scale.multiplyScalar(scale)}
+ fx.add(m);return m}
+function shrink(key,f,pivot){const o=M[key];const lp=o.parent.worldToLocal(pivot.clone());o.scale.multiplyScalar(f);o.position.copy(o.position.clone().multiplyScalar(f).add(lp.multiplyScalar(1-f)))}
+function lab(p,t,side=1){labels.push({p,t,side})}
+function blob(r,seed=1){const g=new THREE.IcosahedronGeometry(r,4);const a=g.attributes.position,v=new THREE.Vector3();
+ for(let i=0;i<a.count;i++){v.fromBufferAttribute(a,i);const n=Math.sin(v.x*.31*seed)*Math.cos(v.y*.27)+Math.sin(v.z*.23+seed);v.multiplyScalar(1+.18*n);a.setXYZ(i,v.x,v.y,v.z)}g.computeVertexNormals();return g}
+function patchy(m,col2,scale=.045,thr=.15){m.onBeforeCompile=sh=>{sh.uniforms.c2={value:new THREE.Color(col2)};
+ sh.vertexShader=sh.vertexShader.replace("#include <common>","#include <common>\nvarying vec3 vW;").replace("#include <worldpos_vertex>","#include <worldpos_vertex>\nvW=(modelMatrix*vec4(transformed,1.)).xyz;");
+ sh.fragmentShader=sh.fragmentShader.replace("#include <common>",`#include <common>
+ varying vec3 vW;uniform vec3 c2;
+ float h(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453);}
+ float n3(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+  return mix(mix(mix(h(i),h(i+vec3(1,0,0)),f.x),mix(h(i+vec3(0,1,0)),h(i+vec3(1,1,0)),f.x),f.y),mix(mix(h(i+vec3(0,0,1)),h(i+vec3(1,0,1)),f.x),mix(h(i+vec3(0,1,1)),h(i+vec3(1,1,1)),f.x),f.y),f.z);}`)
+ .replace("#include <color_fragment>",`#include <color_fragment>
+ float nn=n3(vW*${scale.toFixed(3)})*.65+n3(vW*${(scale*2.7).toFixed(3)})*.35;float k=smoothstep(.5-${thr.toFixed(2)},.5+${thr.toFixed(2)},nn);
+ diffuseColor.rgb=mix(diffuseColor.rgb,c2,k);`)};m.needsUpdate=true}
 
-function reset(){for(const k in M){const o=M[k],b=base[k];o.material.color.setHex(b.c);o.material.opacity=b.op;o.material.emissive.setHex(0);o.scale.copy(b.s);o.position.copy(b.p);o.visible=true}
- fx.clear();pulse=null;}
-function dim(except){for(const k in M){if(k==="skin")continue;if(!except.includes(k))M[k].material.opacity=Math.min(M[k].material.opacity,k==="ribs"?.07:.16)}}
-function centerOf(k){return new THREE.Box3().setFromObject(M[k]).getCenter(new THREE.Vector3())}
-function sphere(at,r,col,op=1){const m=new THREE.Mesh(new THREE.SphereGeometry(r,32,24),new THREE.MeshStandardMaterial({color:col,roughness:.5,transparent:op<1,opacity:op}));m.position.copy(at);fx.add(m);return m}
+function reset(){for(const k in M){const o=M[k],b=base[k];o.material=b.mat;if(b.mat._p){b.mat.onBeforeCompile=()=>{};b.mat.customProgramCacheKey=()=>"";b.mat._p=false;b.mat.needsUpdate=true}o.material.color.setHex(b.c);o.material.opacity=b.op;o.material.emissive.setHex(0);
+  o.scale.copy(b.s);o.position.copy(b.p);o.visible=true;const pa=o.geometry.attributes.position;if(pa.array!==b.pos&&pa.array.length===b.pos.length&&o._def){pa.array.set(b.pos);pa.needsUpdate=true;o.geometry.computeVertexNormals();o._def=false}}
+ root&&root.updateMatrixWorld(true);fx.clear();pulse=null;anim=null;labels.length=0;}
+function dim(except){for(const k in M){if(k==="skin")continue;if(!except.includes(k))M[k].material.opacity=Math.min(M[k].material.opacity,k==="ribs"?.06:.14)}}
 
-let curD=null,sick=true;
-function apply(){reset();if(!curD)return;const z=curD;dim([...z.hi,...z.focus]);
- z.hi.forEach(k=>{M[k].material.opacity=1});
- if(!sick){z.hi.forEach(k=>M[k].material.emissive.setHex(0x0a2a12));return}
- const E=(k,h)=>M[k].material.emissive.setHex(h);
- if(z.fx==="collapse"){const hil=centerOf("bronchus").lerp(centerOf("lung_RM"),.35);
-   ["lung_RU","lung_RM","lung_RL"].forEach(k=>{const o=M[k];const wp=new THREE.Vector3();o.getWorldPosition(wp);
-     o.scale.multiplyScalar(.62);const lp=root.worldToLocal(hil.clone());o.position.copy(lp.multiplyScalar(1-.62));o.material.color.setHex(0xd98190)});
-   sphere(centerOf("lung_RM"),0.1,0x000000,0);
-   const b=new THREE.Box3();["lung_RU","lung_RM","lung_RL"].forEach(k=>b.expandByObject(M[k]));
- }
- if(z.fx==="inflame"){["bronchus","trachea"].forEach(k=>{M[k].material.color.setHex(0xe5484d);E(k,0x400808)});pulse=["bronchus"];}
- if(z.fx==="clot"){M.pulm_artery.material.color.setHex(0x3f6fd6);const a=new THREE.Box3().setFromObject(M.pulm_artery);const c=a.getCenter(new THREE.Vector3());
-   const p=c.clone().add(new THREE.Vector3(-(a.max.x-a.min.x)*.18,0,(a.max.z-a.min.z)*.12));const s=sphere(p,9,0x5a0a12);pulse=["clot",s];}
- if(z.fx==="consol"){M.lung_RL.material.color.setHex(0xb8565f);E("lung_RL",0x3a0d0d);const c=centerOf("lung_RL");
-   for(let i=0;i<9;i++)sphere(c.clone().add(new THREE.Vector3((Math.random()-.5)*60,(Math.random()-.6)*60,(Math.random()-.2)*55)),10+Math.random()*9,0xd9a441,.85);}
- if(z.fx==="fluid"){const b=new THREE.Box3().setFromObject(M.lung_RL);const c=b.getCenter(new THREE.Vector3());const sz=b.getSize(new THREE.Vector3());
-   const m=new THREE.Mesh(new THREE.SphereGeometry(1,40,24,0,Math.PI*2,Math.PI*.55,Math.PI*.45),new THREE.MeshStandardMaterial({color:0x5aa0ff,transparent:true,opacity:.6,side:THREE.DoubleSide}));
-   m.scale.set(sz.x*.62,sz.y*.55,sz.z*.62);m.position.set(c.x,b.min.y+sz.y*.42,c.z);fx.add(m);
-   M.lung_RL.scale.multiplyScalar(.93);}
- if(z.fx==="copd"){["lung_RU","lung_RM","lung_RL","lung_LU","lung_LL"].forEach(k=>{M[k].material.color.setHex(0xf3c9cf)});M.bronchus.material.color.setHex(0xe08a4a);E("bronchus",0x301204);}
- if(z.fx==="asthma"){M.bronchus.material.color.setHex(0xf28c28);E("bronchus",0x3a1800);pulse=["bronchus"];}
- if(z.fx==="mass"){const b=new THREE.Box3().setFromObject(M.lung_RU);const c=b.getCenter(new THREE.Vector3());sphere(c.clone().add(new THREE.Vector3(-12,10,18)),15,0x3a2a2e);}
- if(z.fx==="bulge"){const b=new THREE.Box3().setFromObject(M.aorta);const c=b.getCenter(new THREE.Vector3());sphere(c.clone().add(new THREE.Vector3(2,-30,-4)),22,0xc93a48);E("aorta",0x2a0505);}
-}
+// ---------- hastalık sahneleri (her biri ilerleme fonksiyonu döndürür, p: 0 sağlıklı → 1 tam hastalık) ----------
+const sm=(a,b,p)=>{const t=Math.min(1,Math.max(0,(p-a)/(b-a)));return t*t*(3-2*t)};
+const lerpC=(m,c0,c1,k)=>m.color.copy(new THREE.Color(c0).lerp(new THREE.Color(c1),k));
+function snap(k){const o=M[k];return{s:o.scale.clone(),p:o.position.clone()}}
+function shrinkTo(k,s0,f,pivot){const o=M[k];const lp=o.parent.worldToLocal(pivot.clone());o.scale.copy(s0.s).multiplyScalar(f);o.position.copy(s0.p.clone().multiplyScalar(f).add(lp.multiplyScalar(1-f)))}
+function seeds(key,n,r,col,op=1){const a=M[key].geometry.attributes.position,v=new THREE.Vector3(),out=[];M[key].updateMatrixWorld();
+ for(let i=0;i<n;i++){v.fromBufferAttribute(a,Math.floor(Math.random()*a.count)).applyMatrix4(M[key].matrixWorld);const m=addMesh(new THREE.SphereGeometry(r*(.7+Math.random()*.6),10,8),mat(col,op),v.clone());m.scale.setScalar(.001);m.userData.d=Math.random();out.push(m)}return out}
+function grow(list,p,a,b){list.forEach(m=>{const k=sm(a+(b-a)*m.userData.d*.7,a+(b-a)*(m.userData.d*.7+.3),p);m.scale.setScalar(Math.max(.001,k));m.visible=k>.01})}
+function patchyU(m,col2,scale){const U={c2:{value:new THREE.Color(col2)},amt:{value:0}};m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);
+ sh.vertexShader=sh.vertexShader.replace("#include <common>","#include <common>\nvarying vec3 vW;").replace("#include <worldpos_vertex>","#include <worldpos_vertex>\nvW=(modelMatrix*vec4(transformed,1.)).xyz;");
+ sh.fragmentShader=sh.fragmentShader.replace("#include <common>",`#include <common>
+ varying vec3 vW;uniform vec3 c2;uniform float amt;
+ float h(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453);}
+ float n3(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+  return mix(mix(mix(h(i),h(i+vec3(1,0,0)),f.x),mix(h(i+vec3(0,1,0)),h(i+vec3(1,1,0)),f.x),f.y),mix(mix(h(i+vec3(0,0,1)),h(i+vec3(1,0,1)),f.x),mix(h(i+vec3(0,1,1)),h(i+vec3(1,1,1)),f.x),f.y),f.z);}`)
+ .replace("#include <color_fragment>",`#include <color_fragment>
+ float nn=n3(vW*${scale.toFixed(3)})*.65+n3(vW*${(scale*2.7).toFixed(3)})*.35;float k=smoothstep(1.02-amt*.75,1.1-amt*.75,nn+ .0);
+ diffuseColor.rgb=mix(diffuseColor.rgb,c2,k);`)};m.customProgramCacheKey=()=>"pu"+scale;m._p=true;m.needsUpdate=true;return U}
+
+const FX={
+ collapse(){const pv=ctrOf("bronchus").lerp(ctrOf("lung_RM"),.3);const sh=RIGHT.map(k=>ghost(k,1.0,0xbfe0ff,0,null,{emissive:0x0a2a55}));const s0=Object.fromEntries(RIGHT.map(k=>[k,snap(k)]));
+  const lat=surf("lung_RL",new THREE.Vector3(-1,0,.3));
+  const L=[[new THREE.Vector3().lerpVectors(ctrOf("lung_RM"),lat,.8),"Kaçan hava: akciğer ile göğüs duvarı arası",-1,.45],[ctrOf("lung_RM"),"Büzüşen sağ akciğer",1,.7],[surf("lung_RU",new THREE.Vector3(-1,.4,.4)),"Göğüs duvarı (akciğerin normal sınırı)",-1,.2]];
+  return p=>{const f=1-.4*sm(.1,.9,p);RIGHT.forEach(k=>{shrinkTo(k,s0[k],f,pv);lerpC(M[k].material,0xf0a2ae,0xc9707f,sm(.2,1,p))});sh.forEach(m=>m.material.opacity=.18*sm(.05,.4,p));return L}},
+ inflame(){const mu=seeds("bronchus",150,2.4,0xe6cf72);
+  const L=[[surf("trachea",new THREE.Vector3(0,0,1)),"İltihaplı soluk borusu",1,.35],[ctrOf("bronchus").add(new THREE.Vector3(-55,-20,10)),"Şişmiş, daralmış bronşlar",-1,.5],[ctrOf("bronchus").add(new THREE.Vector3(50,-35,10)),"Sarı noktalar: biriken balgam",1,.7]];
+  return p=>{const k=sm(0,.6,p);["bronchus","trachea"].forEach(x=>{lerpC(M[x].material,0xdfe7f2,0xd8343c,k);M[x].material.emissive.setRGB(.22*k,.02*k,.02*k)});grow(mu,p,.4,1);return L}},
+ clot(){const a=boxOf("pulm_artery"),c=a.getCenter(new THREE.Vector3());const start=ctrOf("heart").add(new THREE.Vector3(0,-10,20));
+  const end=c.clone().add(new THREE.Vector3(-(a.max.x-a.min.x)*.2,-8,(a.max.z-a.min.z)*.1));const mid=start.clone().lerp(end,.5).add(new THREE.Vector3(0,25,15));
+  const cl=addMesh(blob(7,2),mat(0x4a0710,1,{roughness:.8}),start);M.lung_RL.material.opacity=.9;const U=patchyU(M.lung_RL.material,0x4a3550,.035);
+  const L=[[ctrOf("heart"),"Kalp: pıhtıyı akciğere pompalar",1,.1],[end,"Pıhtı damarı tıkıyor",-1,.55],[ctrOf("lung_RL").add(new THREE.Vector3(-20,-25,10)),"Kan gidemeyen akciğer bölümü",-1,.8]];
+  return p=>{const e=sm(.05,.55,p);cl.position.copy(new THREE.Vector3().lerpVectors(start,mid,e).lerp(new THREE.Vector3().lerpVectors(mid,end,e),e));U.amt.value=sm(.55,1,p);return L}},
+ consol(){const m=M.lung_RL.material;m.opacity=.97;const U=patchyU(m,0xb0583a,.05);const bac=seeds("lung_RL",120,2.2,0x7bc96f);
+  const L=[[ctrOf("lung_RL").add(new THREE.Vector3(-30,10,30)),"Yeşil noktalar: çoğalan mikroplar",-1,.25],[ctrOf("lung_RL").add(new THREE.Vector3(-25,-15,25)),"Koyu alanlar: iltihapla dolan hava kesecikleri",-1,.65],[ctrOf("lung_RU"),"Sağlıklı, havalı akciğer",1,.1]];
+  return p=>{grow(bac,p,0,.55);bac.forEach(b=>b.material.opacity=1-sm(.7,1,p)*.6);U.amt.value=sm(.35,1,p);return L}},
+ fluid(){M.diaphragm.material.opacity=.12;M.ribs.material.opacity=.05;const b=boxOf(RIGHT),sz=b.getSize(new THREE.Vector3());const lvlMax=b.min.y+sz.y*.38;
+  const plane=new THREE.Plane(new THREE.Vector3(0,-1,0),b.min.y);const ctr=ctrOf(RIGHT);
+  RIGHT.forEach(k=>ghost(k,1.07,0xe9f1ff,.13,ctr));
+  ["lung_RL","lung_RM"].forEach(k=>ghost(k,1.075,0xF2D27A,.72,ctr,{clippingPlanes:[plane],roughness:.15,emissive:0x2a1d00}));
+  const s0=snap("lung_RL");const pv=new THREE.Vector3(ctrOf("lung_RL").x,b.max.y,ctrOf("lung_RL").z);
+  const L=[[new THREE.Vector3(b.min.x+sz.x*.1,b.min.y+sz.y*.55,b.max.z-sz.z*.35),"Akciğer zarı (iki katlı)",-1,0],[new THREE.Vector3(b.min.x+sz.x*.2,b.min.y+sz.y*.12,b.max.z-sz.z*.25),"Biriken sıvı: açık sarı, berrak",-1,.35],[ctrOf("diaphragm").add(new THREE.Vector3(-40,0,30)),"Sıvı yerçekimiyle alta toplanır",1,.5],[ctrOf("lung_RL").add(new THREE.Vector3(10,15,15)),"Sıvının ittiği akciğer tabanı",1,.8]];
+  return p=>{plane.constant=b.min.y+(lvlMax-b.min.y)*sm(.05,.95,p)+(-2);shrinkTo("lung_RL",s0,1-.14*sm(.4,1,p),pv);return L}},
+ copd(){const pv=ctrOf(LUNGS);const s0=Object.fromEntries(LUNGS.map(k=>[k,snap(k)]));const d0={z:M.diaphragm.scale.z,p:M.diaphragm.position.z};
+  const bl=[["lung_RU",new THREE.Vector3(-.6,1,.5)],["lung_LU",new THREE.Vector3(.6,1,.5)],["lung_RU",new THREE.Vector3(-.2,.9,.9)],["lung_LU",new THREE.Vector3(.3,.8,.9)]].map(([k,dir],i)=>{const m=addMesh(new THREE.SphereGeometry(9+i*2,24,16),mat(0xffffff,.35,{roughness:.1}),surf(k,dir));m.userData.d=i/4;return m});
+  const L=[[ctrOf("bronchus"),"Daralan hava yolları",1,.2],[surf("lung_LU",new THREE.Vector3(.6,1,.5)),"Hava keseleri (bül): esnekliğini yitirmiş doku",1,.6],[ctrOf("lung_RL"),"Havayı boşaltamayan, şişen akciğer",-1,.45],[ctrOf("diaphragm"),"Basıklaşan diyafram",-1,.8]];
+  return p=>{const k=sm(.2,1,p);LUNGS.forEach(x=>{shrinkTo(x,s0[x],1+.06*k,pv);lerpC(M[x].material,0xf0a2ae,0xf6d3d8,k)});lerpC(M.bronchus.material,0xdfe7f2,0xd9773a,sm(0,.4,p));
+   M.diaphragm.scale.z=d0.z*(1-.28*sm(.5,1,p));M.diaphragm.position.z=d0.p-8*sm(.5,1,p);grow(bl,p,.45,1);return L}},
+ asthma(){const mu=seeds("bronchus",80,1.8,0xf3e3a0);
+  const L=[[ctrOf("bronchus").add(new THREE.Vector3(-50,-15,10)),"Kasılan bronş kasları",-1,.3],[ctrOf("bronchus").add(new THREE.Vector3(50,-30,10)),"Artan mukus",1,.65]];
+  return p=>{const k=sm(.1,.5,p);lerpC(M.bronchus.material,0xdfe7f2,0xef8a2a,k);pulse=k>.5?{t:"squeeze"}:null;grow(mu,p,.5,1);return L}},
+ mass(){const pt=surf("lung_RU",new THREE.Vector3(-.5,.5,1));M.lung_RU.material.opacity=.4;M.ribs.material.opacity=.03;
+  const m=addMesh(blob(17,3),mat(0x6b2f2a,1,{roughness:.8,emissive:0x2a0905}),pt.clone().add(new THREE.Vector3(3,0,-4)));const halo=addMesh(new THREE.SphereGeometry(22,32,24),mat(0xffd27a,0),m.position);
+  const L=[[pt,"Kitle: düzensiz sınırlı doku",-1,.4],[ctrOf("bronchus"),"Ana bronşlar",1,0]];
+  return p=>{const k=sm(.05,1,p);m.scale.setScalar(.08+.92*k);m.rotation.y=k*.6;halo.scale.setScalar(.2+.9*k);halo.material.opacity=.22*sm(.6,1,p);return L}},
+ bulge(){const o=M.aorta,pa=o.geometry.attributes.position,arr=pa.array,orig=base.aorta.pos;const b=new THREE.Box3().setFromBufferAttribute(pa);
+  const z0=b.min.z+(b.max.z-b.min.z)*.42,w=38;let cx=0,cy=0,n=0;for(let i=0;i<pa.count;i++){if(Math.abs(orig[i*3+2]-z0)<6){cx+=orig[i*3];cy+=orig[i*3+1];n++}}cx/=n;cy/=n;
+  const idx=[];for(let i=0;i<pa.count;i++){const d=Math.abs(orig[i*3+2]-z0);if(d<w&&Math.hypot(orig[i*3]-cx,orig[i*3+1]-cy)<25)idx.push([i,Math.pow(Math.cos(d/w*Math.PI/2),2)])}
+  o._def=true;const wp=new THREE.Vector3(cx,cy,z0).applyMatrix4(o.matrixWorld);
+  const L=[[ctrOf("heart"),"Kalp",-1,0],[wp,"Balon gibi genişleyen aort duvarı",1,.5]];
+  return p=>{const k=sm(.05,1,p);idx.forEach(([i,w])=>{const f=1+1.25*w*k;arr[i*3]=cx+(orig[i*3]-cx)*f;arr[i*3+1]=cy+(orig[i*3+1]-cy)*f});pa.needsUpdate=true;o.geometry.computeVertexNormals();
+   lerpC(o.material,0xd94b5a,0xb3303d,k);return L}}
+};
+let curD=null,sick=true,step=null,P=0,playing=false,pT0=0;const DUR=7000;
+function apply(){reset();step=null;if(!curD)return;const z=curD;dim([...z.hi,...z.focus]);z.hi.forEach(k=>{M[k].material.opacity=1});
+ if(FX[z.fx])step=FX[z.fx]();setP(sick?P:0)}
+function setP(p){P=p;labels.length=0;if(step){const L=step(p)||[];L.forEach(([pt,t,side,at])=>{if(p>=at)labels.push({p:pt,t,side})})}
+ const sl=document.getElementById("pg");if(sl)sl.value=Math.round(p*100);const ph=document.getElementById("ph");if(ph)ph.textContent=p<.02?"Sağlıklı":p>.98?"Hastalık tam gelişmiş":"Süreç ilerliyor…";}
+function play(){playing=true;pT0=performance.now()-P*DUR;if(P>=.999){P=0;pT0=performance.now()}document.getElementById("pl").textContent="⏸";}
+function stop(){playing=false;document.getElementById("pl").textContent="▶"}
+
+// etiket katmanı
+const svgL=document.createElementNS("http://www.w3.org/2000/svg","svg");svgL.style.cssText="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:3";document.body.appendChild(svgL);
+const labBox=document.createElement("div");labBox.style.cssText="position:fixed;inset:0;pointer-events:none;z-index:3";document.body.appendChild(labBox);
+const st=document.createElement("style");st.textContent=".lb{position:absolute;max-width:150px;font:700 12px/1.3 system-ui;color:#fff;background:rgba(11,18,32,.82);border:1px solid #3B82F6;padding:5px 8px;border-radius:8px;transform:translateY(-50%)}";document.head.appendChild(st);
+function drawLabels(){svgL.innerHTML="";labBox.innerHTML="";const W=innerWidth,H=innerHeight;const used=[];
+ labels.forEach(l=>{const v=l.p.clone().project(cam);if(v.z>1)return;const x=(v.x+1)/2*W,y=(1-v.y)/2*H;
+  let lx=l.side<0?Math.max(8,x-150):Math.min(W-158,x+40),ly=Math.max(124,y-30);while(used.some(u=>Math.abs(u-ly)<34))ly+=36;used.push(ly);
+  const ex=l.side<0?lx+150:lx;svgL.insertAdjacentHTML("beforeend",`<line x1="${x}" y1="${y}" x2="${ex}" y2="${ly}" stroke="#60A5FA" stroke-width="1.5"/><circle cx="${x}" cy="${y}" r="4" fill="#fff" stroke="#3B82F6" stroke-width="2"/>`);
+  const d=document.createElement("div");d.className="lb";d.textContent=l.t;d.style.left=lx+"px";d.style.top=ly+"px";if(l.side<0)d.style.textAlign="right";labBox.appendChild(d)})}
 
 // arama
 const q=document.getElementById("q"),sug=document.getElementById("sug");let act=0,list=[];
@@ -161,15 +245,20 @@ sug.addEventListener("click",e=>{const li=e.target.closest("li[data-i]");if(li)p
 function pick(d){curD=d;sick=true;q.value=d.n;sug.style.display="none";q.blur();
  document.getElementById("pT").textContent=d.n;document.getElementById("pL").textContent=d.lat;document.getElementById("pD").textContent=d.d;
  document.getElementById("pC").innerHTML=d.hi.filter((k,i,a)=>!(k.startsWith("lung")&&a.filter(x=>x.startsWith("lung")).length>2&&i>0)).map(k=>`<span><i style="background:#${COL[k].toString(16).padStart(6,"0")}"></i>${a2(k,d)}</span>`).join("");
- document.getElementById("panel").classList.add("on");document.getElementById("hint").style.display="none";tog();apply();flyTo(d.focus);}
+ document.getElementById("panel").classList.add("on");document.getElementById("hint").style.display="none";P=0;apply();flyTo(d.focus);setTimeout(play,900);}
 const a2=(k,d)=>d.hi.filter(x=>x.startsWith("lung")).length>2&&k.startsWith("lung")?"Akciğerler":NAME[k];
-function tog(){document.getElementById("tS").classList.toggle("on",sick);document.getElementById("tH").classList.toggle("on",!sick)}
-document.getElementById("tS").onclick=()=>{sick=true;tog();apply()};document.getElementById("tH").onclick=()=>{sick=false;tog();apply()};
-document.getElementById("px").onclick=()=>{curD=null;reset();document.getElementById("panel").classList.remove("on");q.value="";
+document.getElementById("pl").onclick=()=>playing?stop():play();
+document.getElementById("pg").addEventListener("input",e=>{stop();setP(e.target.value/100)});
+document.getElementById("px").onclick=()=>{stop();curD=null;step=null;reset();document.getElementById("panel").classList.remove("on");q.value="";
  if(home)fly={t0:performance.now(),dur:1100,fp:cam.position.clone(),ft:ctl.target.clone(),tp:home.p.clone(),tt:home.t.clone()}};
 
 (function loop(t){requestAnimationFrame(loop);
  if(fly){const k=Math.min(1,(t-fly.t0)/fly.dur),e=ease(k);cam.position.lerpVectors(fly.fp,fly.tp,e);ctl.target.lerpVectors(fly.ft,fly.tt,e);if(k>=1)fly=null}
- if(pulse){const s=.5+.5*Math.sin(t/260);if(pulse[0]==="clot")pulse[1].scale.setScalar(1+.12*s);else pulse.forEach(k=>M[k]&&M[k].material.emissive.setRGB(.25*s,.05*s,0))}
- ctl.update();R.render(S,cam);})(0);
+ if(playing){const p=Math.min(1,(t-pT0)/DUR);setP(p);if(p>=1)stop()}
+ if(pulse){const s=.5+.5*Math.sin(t/260);
+  if(pulse.t==="emis")pulse.k.forEach(k=>M[k].material.emissive.setRGB(pulse.c[0]*s,pulse.c[1]*s,pulse.c[2]*s));
+  if(pulse.t==="squeeze"){M.bronchus.material.emissive.setRGB(.3*s,.12*s,0)}
+  if(pulse.t==="scale")pulse.o.scale.setScalar(1+.1*s);
+  if(pulse.t==="halo"){pulse.o.material.opacity=.08+.16*s;pulse.o.scale.setScalar(1+.15*s)}}
+ ctl.update();R.render(S,cam);drawLabels();})(0);
 </script></body></html>
