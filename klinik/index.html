@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Hasta Anlatım Modülü · Demo</title>
+<style>
+:root{--bg:#F4F7FA;--card:#fff;--ink:#14213D;--mute:#5D6B82;--line:#E2E8F0;--brand:#1E6FD9;--brand2:#E8F1FD;--ok:#16A36A;--warn:#E5484D;--air:#CFE3FF}
+*{box-sizing:border-box;margin:0}body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+.wrap{max-width:560px;margin:0 auto;padding:0 0 40px}
+header{background:var(--card);padding:16px 18px;display:flex;gap:12px;align-items:center;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.lg{width:42px;height:42px;border-radius:12px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;font-size:18px}
+header b{display:block;font-size:16px}header small{color:var(--mute);font-size:13px}
+.pick{display:flex;gap:8px;padding:14px 16px 0;overflow-x:auto}
+.pick button{flex:none;border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:9px 14px;font:600 14px inherit;font-family:inherit;color:var(--mute);cursor:pointer}
+.pick button.on{border-color:var(--brand);background:var(--brand2);color:var(--brand)}
+.hero{padding:18px 18px 6px}
+.tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--brand);background:var(--brand2);padding:4px 9px;border-radius:6px}
+h1{font-size:26px;line-height:1.15;margin:10px 0 4px}
+.latin{color:var(--mute);font-size:14px}
+.stage{margin:14px 16px 0;background:var(--card);border-radius:22px;border:1px solid var(--line);overflow:hidden}
+.seg{display:grid;grid-template-columns:1fr 1fr;padding:6px;gap:6px;background:#EEF2F7;margin:12px;border-radius:14px}
+.seg button{border:0;border-radius:10px;padding:10px;font:700 14px inherit;font-family:inherit;background:transparent;color:var(--mute);cursor:pointer}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.seg button.on.sick{color:var(--warn)}
+svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:12px;padding:4px 16px 16px;font-size:13px;color:var(--mute)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.cap{margin:0 16px;padding:12px 14px;border-radius:12px;font-size:15px;line-height:1.45;background:#FFF5F5;color:#8A1F23;display:none}
+.cap.ok{background:#EEFBF4;color:#0E6B45}
+.cap.show{display:block}
+section.card{background:var(--card);margin:14px 16px 0;border-radius:18px;border:1px solid var(--line);padding:16px 18px}
+section.card h2{font-size:17px;margin-bottom:8px;display:flex;gap:8px;align-items:center}
+section.card p,section.card li{font-size:15.5px;line-height:1.55;color:#2A3650}
+section.card ul{padding-left:20px;display:grid;gap:4px}
+.alert{border-color:#F7C7C9;background:#FFF8F8}
+.alert h2{color:var(--warn)}
+.dr{display:flex;gap:12px;align-items:center}
+.dr .av{width:44px;height:44px;border-radius:50%;background:var(--brand2);display:grid;place-items:center;font-size:22px}
+.note{margin:16px 18px 0;font-size:12.5px;color:var(--mute);line-height:1.5;text-align:center}
+.lung{transition:transform .9s cubic-bezier(.5,0,.2,1)}
+.breath{animation:br 4.2s ease-in-out infinite;transform-origin:50% 60%}
+@keyframes br{0%,100%{transform:scale(1)}45%{transform:scale(1.035)}}
+.fade{transition:opacity .7s}
+</style></head><body><div class="wrap">
+<header><div class="lg">K</div><div><b>Klinik Adınız</b><small>Dr. Ad Soyad · Göğüs Hastalıkları</small></div></header>
+
+<div class="pick" id="pick"></div>
+
+<div class="hero"><span class="tag">Size konulan tanı</span><h1 id="title"></h1><div class="latin" id="latin"></div></div>
+
+<div class="stage">
+  <div class="seg"><button id="bH" class="on">Sağlıklı akciğer</button><button id="bS" class="sick">Sizin durumunuz</button></div>
+  <svg viewBox="0 0 400 330" id="svg" aria-label="Akciğer çizimi">
+    <defs>
+      <radialGradient id="lg" cx="50%" cy="40%" r="65%"><stop offset="0" stop-color="#F7A9B4"/><stop offset="1" stop-color="#E07A8B"/></radialGradient>
+      <pattern id="dots" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="1.2" fill="#fff" opacity=".35"/></pattern>
+    </defs>
+    <!-- göğüs kafesi çerçevesi -->
+    <path d="M60 300 C40 200 60 90 120 55 L280 55 C340 90 360 200 340 300 Z" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="2"/>
+    <g opacity=".5" stroke="#CBD5E1" stroke-width="5" fill="none" stroke-linecap="round">
+      <path d="M90 120 Q200 95 310 120"/><path d="M78 160 Q200 135 322 160"/><path d="M72 200 Q200 175 328 200"/><path d="M74 240 Q200 215 326 240"/>
+    </g>
+    <!-- plevra boşluğu (sağ akciğer = ekranın solu) -->
+    <path id="pleura" class="fade" d="M190 70 C120 70 82 130 82 200 C82 260 100 290 150 292 L190 292 Z" fill="var(--air)" opacity="0"/>
+    <text id="airLbl" class="fade" x="96" y="96" font-size="13" font-weight="700" fill="#1E6FD9" opacity="0">Kaçan hava</text>
+    <!-- sol göğüs tarafı: sağ akciğer -->
+    <g class="lung" id="lungR" style="transform-origin:185px 175px">
+      <g class="breath">
+        <path d="M185 78 C130 78 92 135 92 200 C92 255 110 284 150 284 C172 284 185 268 185 240 Z" fill="url(#lg)"/>
+        <path d="M185 78 C130 78 92 135 92 200 C92 255 110 284 150 284 C172 284 185 268 185 240 Z" fill="url(#dots)"/>
+        <path d="M105 175 Q140 165 183 150 M115 225 Q150 215 183 205" stroke="#C9606F" stroke-width="2" fill="none" opacity=".6"/>
+      </g>
+      <g class="bR" fill="none" stroke-linecap="round" stroke="#E9EEF5" stroke-width="11">
+        <path d="M200 118 Q185 130 165 150 Q150 165 140 190"/><path d="M165 150 Q140 150 120 165"/><path d="M150 170 Q140 205 135 235"/>
+      </g>
+      <g class="mR fade" opacity="0" fill="#E9C46A"><circle cx="170" cy="146" r="4"/><circle cx="148" cy="178" r="3.5"/><circle cx="137" cy="220" r="3"/><circle cx="130" cy="160" r="3"/></g>
+    </g>
+    <!-- sol akciğer -->
+    <g style="transform-origin:220px 150px"><g class="breath">
+      <path d="M215 78 C270 78 308 135 308 200 C308 255 290 284 252 284 C232 284 215 268 215 240 L215 200 C230 205 240 190 236 175 L215 165 Z" fill="url(#lg)"/>
+      <path d="M215 78 C270 78 308 135 308 200 C308 255 290 284 252 284 C232 284 215 268 215 240 L215 200 C230 205 240 190 236 175 L215 165 Z" fill="url(#dots)"/>
+      <path d="M217 190 Q260 180 295 195" stroke="#C9606F" stroke-width="2" fill="none" opacity=".6"/>
+    </g></g>
+    <!-- nefes borusu ve bronşlar -->
+    <g id="airway" fill="none" stroke-linecap="round">
+      <path id="trachea" d="M200 20 L200 120" stroke="#E9EEF5" stroke-width="20"/>
+      <g id="bronchi" stroke="#E9EEF5" stroke-width="11">
+        <path d="M200 118 Q215 130 235 150 Q250 165 260 190"/><path d="M235 150 Q260 150 280 165"/><path d="M250 170 Q260 205 265 235"/>
+      </g>
+      <g id="mucus" class="fade" opacity="0" fill="#E9C46A" stroke="none">
+        <circle cx="232" cy="146" r="4"/><circle cx="254" cy="178" r="3.5"/><circle cx="263" cy="222" r="3"/><circle cx="272" cy="160" r="3"/>
+      </g>
+      <g stroke="#B8C4D4" stroke-width="2"><path d="M192 30 L208 30 M192 45 L208 45 M192 60 L208 60 M192 75 L208 75 M192 90 L208 90"/></g>
+    </g>
+    <text x="200" y="318" text-anchor="middle" font-size="12" fill="#94A3B8">Önden görünüm · sağ akciğeriniz ekranın solundadır</text>
+  </svg>
+  <div class="legend" id="legend"></div>
+  <div class="cap" id="cap"></div>
+  <div style="height:14px"></div>
+</div>
+
+<div id="cards"></div>
+
+<section class="card"><div class="dr"><div class="av">👨‍⚕️</div><div><b>Dr. Ad Soyad</b><p style="font-size:14px;color:var(--mute)">Aklınıza takılan bir şey olursa kontrolünüzde sorun.</p></div></div></section>
+<p class="note">Bu sayfa doktorunuzun yaptığı açıklamayı desteklemek içindir; muayene ve doktor tavsiyesinin yerini tutmaz. Kendinizde ani kötüleşme fark ederseniz 112'yi arayın.</p>
+<p class="note" style="margin-top:6px">Demo · Creamodul Hasta Anlatım Modülü</p>
+</div>
+
+<script>
+const D={
+ ptx:{name:"Akciğer sönmesi",latin:"Tıbbi adı: Pnömotoraks",
+  healthy:"Sağlıklı akciğer, göğüs duvarının iç yüzeyine yapışık durur. Nefes aldıkça akciğer şişer, verdikçe söner.",
+  sick:"Akciğer ile göğüs duvarı arasındaki ince boşluğa hava kaçmış. Bu hava akciğeri dışarıdan sıkıştırdığı için akciğer büzüşmüş ve tam açılamıyor.",
+  legend:[["#E07A8B","Akciğer dokusu"],["#CFE3FF","Kaçan hava (sizde)"]],
+  cards:[
+   ["🫁","Ne oldu?","Akciğerinizi saran ince zarın arasına hava girdi. Bu hava, balonun dışından bastırılması gibi akciğerinizi sıkıştırıyor. Bu yüzden nefes darlığı ve göğüste batma hissi oluyor."],
+   ["❓","Neden olur?",["Bazen hiçbir sebep olmadan, özellikle uzun boylu ve zayıf gençlerde kendiliğinden olur","Sigara içmek riski belirgin şekilde artırır","Göğüse alınan darbe ya da bazı akciğer hastalıkları da yol açabilir"]],
+   ["💊","Tedavi genelde nasıl?",["Küçük sönmelerde bazen sadece gözlem ve oksijen yeterlidir, hava kendiliğinden emilir","Büyükse, kaçan hava ince bir iğne ya da göğüse yerleştirilen bir tüple dışarı alınır","Tekrarlayan durumlarda doktorunuz başka tedaviler önerebilir"]],
+   ["✅","İyileşirken",["Sigara içmeyin, bu tekrarlama riskini azaltır","Doktorunuz izin verene kadar uçak yolculuğu ve dalış yapmayın","Kontrol randevunuzu aksatmayın"]],
+   ["alert","Hemen acile başvurun",["Nefes darlığınız artıyorsa","Göğüs ağrınız şiddetleniyorsa","Dudaklarınızda morarma fark ederseniz"]]]},
+ bron:{name:"Bronşit",latin:"Tıbbi adı: Akut bronşit",
+  healthy:"Sağlıklı bronşlar, havayı akciğerlere taşıyan geniş ve temiz borulardır. İç yüzeyleri ince bir tabakayla kaplıdır.",
+  sick:"Bronşlarınızın iç yüzeyi iltihaplanmış ve şişmiş. Borular daralmış, içlerinde balgam birikmiş. Öksürük, vücudunuzun bu balgamı dışarı atma çabasıdır.",
+  legend:[["#E9EEF5","Bronşlar"],["#E5484D","İltihaplı, daralmış bronş (sizde)"],["#E9C46A","Balgam"]],
+  cards:[
+   ["🫁","Ne oldu?","Nefes borunuzdan akciğerlere uzanan hava yolları (bronşlar) iltihaplandı. Bu yüzden öksürük, balgam ve göğüste hırıltı oluyor. Akciğerlerin kendisi değil, hava yolları etkilendi."],
+   ["❓","Neden olur?",["Çoğunlukla soğuk algınlığı ve grip gibi virüslerle başlar","Sigara dumanı ve hava kirliliği riski artırır"]],
+   ["💊","Tedavi genelde nasıl?",["Virüsten kaynaklandığı için çoğu zaman antibiyotik gerekmez","Dinlenmek, bol sıvı almak ve doktorunuzun önerdiği ilaçlar yeterlidir","Öksürük 2-3 hafta kadar sürebilir, bu normaldir"]],
+   ["✅","İyileşirken",["Sigara içmeyin, dumanlı ortamlardan uzak durun","Bol su için","Ellerinizi sık yıkayın, çevrenize bulaştırmamaya dikkat edin"]],
+   ["alert","Tekrar doktora başvurun",["Yüksek ateşiniz birkaç günden uzun sürerse","Nefes almakta zorlanırsanız","Balgamda kan görürseniz","Öksürük 3 haftadan uzun sürerse"]]]}
+};
+let cur="ptx",sick=false;const $=id=>document.getElementById(id);
+$("pick").innerHTML=Object.entries(D).map(([k,v])=>`<button data-k="${k}">${v.name}</button>`).join("");
+$("pick").onclick=e=>{const b=e.target.closest("button");if(b){cur=b.dataset.k;sick=false;render();}};
+$("bH").onclick=()=>{sick=false;draw()};$("bS").onclick=()=>{sick=true;draw()};
+function draw(){const d=D[cur];$("bH").classList.toggle("on",!sick);$("bS").classList.toggle("on",sick);
+ const ptx=cur==="ptx"&&sick, br=cur==="bron"&&sick;
+ $("lungR").style.transform=ptx?"scale(.66)":"none";
+ $("pleura").style.opacity=ptx?1:0;$("airLbl").style.opacity=ptx?1:0;
+ [...$("bronchi").children,...document.querySelectorAll(".bR path")].forEach(p=>{p.style.transition="all .8s";p.setAttribute("stroke",br?"#E5484D":"#E9EEF5");p.setAttribute("stroke-width",br?"7":"11")});
+ $("mucus").style.opacity=br?1:0;document.querySelector(".mR").style.opacity=br?1:0;
+ const c=$("cap");c.className="cap show"+(sick?"":" ok");c.textContent=sick?d.sick:d.healthy;}
+function render(){const d=D[cur];$("title").textContent=d.name;$("latin").textContent=d.latin;
+ [...$("pick").children].forEach(b=>b.classList.toggle("on",b.dataset.k===cur));
+ $("legend").innerHTML=d.legend.map(([c,t])=>`<span><i style="background:${c}"></i>${t}</span>`).join("");
+ $("cards").innerHTML=d.cards.map(([ic,h,b])=>{const al=ic==="alert";return `<section class="card ${al?"alert":""}"><h2>${al?"🚨":ic} ${h}</h2>${Array.isArray(b)?"<ul>"+b.map(x=>`<li>${x}</li>`).join("")+"</ul>":`<p>${b}</p>`}</section>`}).join("");
+ draw();}
+render();
+</script></body></html>
