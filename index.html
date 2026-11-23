@@ -191,6 +191,7 @@ input[type=range]{width:100%;accent-color:var(--ketchup);height:28px}
         <div class="eyebrow">Hazır</div>
         <h2>Burgerin hazır</h2>
         <div class="summary" id="summary"></div>
+        <label for="custName" style="display:block;font-weight:700;font-size:14px;margin:12px 2px 6px">İsminiz <small style="color:var(--muted);font-weight:500">(isteğe bağlı · masada siparişler karışmasın)</small></label><input id="custName" maxlength="20" autocomplete="given-name" placeholder="ör. Ayşe" style="width:100%;box-sizing:border-box;background:var(--chip);color:var(--fg);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font:inherit;font-size:16px;margin-bottom:8px">
         <div class="nav"><button class="btn ghost" id="again">Baştan</button><button class="btn" id="order">Siparişi gönder</button></div>
       </div>
 
@@ -305,7 +306,7 @@ function reset(){S.meat=null;S.done=50;S.ing.clear();S.sauces=[];S.drink=null;S.
 $('order').onclick=()=>{const now=new Date();const hh=String(now.getHours()).padStart(2,'0'),mm=String(now.getMinutes()).padStart(2,'0');const no=1000+Math.floor(Math.random()*900);
   const ing=ingList();
   $('ticket').innerHTML=`<div class="c big">ÖRNEK BURGER</div><div class="c">MUTFAK FİŞİ</div><hr>
-  <div class="row"><b>Sipariş #${no}</b><span>${hh}:${mm}</span></div><div class="row"><span>Servis</span><b>Masa 7</b></div><hr>
+  <div class="row"><b>Sipariş #${no}</b><span>${hh}:${mm}</span></div><div class="row"><span>Servis</span><b>Masa 7</b></div>${(document.getElementById('custName').value||'').trim()?`<div class="row"><span>Kişi</span><b>${(document.getElementById('custName').value||'').trim().replace(/[<>&]/g,'').toUpperCase()}</b></div>`:''}<hr>
   <div class="big">1x ${pattyName()}${S.meat==='chicken'?'TAVUK':'KÖFTE'} BURGER</div>${S.meat==='chicken'?'':`<div class="hl">${doneLabel().toUpperCase()}</div>`}
   <ul>${ing.map(x=>`<li>${x}</li>`).join('')||'<li>Sade</li>'}</ul>
   ${S.sauces.length?`<div style="margin-top:6px"><b>SOS:</b> ${nm(S.sauces,SAUCE).join(', ')}</div>`:''}<hr>
